@@ -1,0 +1,12 @@
+PyQt6
+pykcs11
+pylint
+black
+PyQt6-WebEngine
+PyJWT
+asn1crypto
+requests
+cryptography
+flask
+jwcrypto
+bs4
