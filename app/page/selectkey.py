@@ -25,8 +25,11 @@ class SelectYubiKeyPage(QWizardPage):
         # Sample YubiKeys
         yubikeys = []
         for slot in self.pkcs.pkcs11.getSlotList():
-            info = self.pkcs.pkcs11.getTokenInfo(slot)
-            yubikeys += [(info.model, info.serialNumber, info.label, slot)]
+            try:
+                info = self.pkcs.pkcs11.getTokenInfo(slot)
+                yubikeys += [(info.model, info.serialNumber, info.label, slot)]
+            except:
+                pass
 
         for name, serial, available, slot in yubikeys:
             itemWidget = YubiKeyItemWidget(name, serial, available, slot)
