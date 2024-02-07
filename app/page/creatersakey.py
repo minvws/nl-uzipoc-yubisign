@@ -8,6 +8,7 @@ from .worker import Worker
 class CreateRSAKeysPage(QWizardPage):
     currentStep = 0
     totalSteps = 0
+    alreadycalled = None
 
     def __init__(self, mypkcs, parent=None):
         super().__init__(parent)

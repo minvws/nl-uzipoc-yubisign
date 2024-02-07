@@ -14,6 +14,9 @@ from bs4 import BeautifulSoup
 
 
 class LoginWithDigiDPage(QWizardPage):
+    profile = None
+    browser = None
+
     def __init__(self, myacme, parent=None):
         super().__init__(parent)
         # super(LoginWithDigiDPage, self).__init__(parent)
