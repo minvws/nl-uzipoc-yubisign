@@ -30,8 +30,6 @@ cryptography==41.0.3
     # via
     #   -r requirements.in
     #   jwcrypto
-deprecated==1.2.14
-    # via jwcrypto
 dill==0.3.7
     # via pylint
 flask==2.3.3
@@ -44,7 +42,7 @@ itsdangerous==2.1.2
     # via flask
 jinja2==3.1.2
     # via flask
-jwcrypto==1.5.0
+jwcrypto==1.5.5
     # via -r requirements.in
 lazy-object-proxy==1.9.0
     # via astroid
@@ -92,11 +90,11 @@ soupsieve==2.5
     # via beautifulsoup4
 tomlkit==0.12.1
     # via pylint
+typing-extensions==4.10.0
+    # via jwcrypto
 urllib3==2.0.4
     # via requests
 werkzeug==2.3.7
     # via flask
 wrapt==1.15.0
-    # via
-    #   astroid
-    #   deprecated
+    # via astroid
