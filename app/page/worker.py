@@ -15,6 +15,8 @@ class Worker(QObject):
     def task(self):
         try:
             print("** Worker", self.currentStep)
+            # keysize of 4096 is not supported, for more info: 
+            # https://github.com/Yubico/yubico-piv-tool/issues/58
             public_template = [
                 (PyKCS11.CKA_CLASS, PyKCS11.CKO_PUBLIC_KEY),
                 (PyKCS11.CKA_KEY_TYPE, PyKCS11.CKK_RSA),
