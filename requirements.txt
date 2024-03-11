@@ -94,7 +94,7 @@ typing-extensions==4.10.0
     # via jwcrypto
 urllib3==2.0.4
     # via requests
-werkzeug==2.3.7
+werkzeug==2.3.8
     # via flask
 wrapt==1.15.0
     # via astroid
