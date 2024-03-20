@@ -1,3 +1,7 @@
+# Disclaimer
+This Repository is created as a PoC (Proof of Concept) as part of the project *Toekomstbestendig maken UZI*, and 
+**should not be used as is in any production environment**.
+
 # Wat doet dit?
 
 Dit neemt een yubikey (doe maar versie 5) en maakt daarin de PIV module *leeg*
