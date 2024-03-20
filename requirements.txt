@@ -10,7 +10,7 @@ astroid==2.15.6
     # via pylint
 beautifulsoup4==4.12.2
     # via bs4
-black==23.7.0
+black==24.3.0
     # via -r requirements.in
 blinker==1.6.2
     # via flask
