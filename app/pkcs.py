@@ -20,6 +20,9 @@ class AlgorithmIdentifier(Sequence):
 
 
 class pkcs:
+    DEFAULT_LIB_LOCATION = "/usr/lib64/libykcs11.so.2"
+    DEFAULT_HOMEBREW_LOCATION = "/opt/homebrew/lib/libykcs11.dylib"
+
     pkcs11 = None
     sessions = {}
     attest = None
@@ -28,7 +31,9 @@ class pkcs:
 
     def __init__(self):
         self.pkcs11 = PyKCS11.PyKCS11Lib()
-        self.pkcs11.load("/usr/lib64/libykcs11.so.2")
+
+        # TODO make this configurable via environment variable. For every machine, then can be different
+        self.pkcs11.load(self.DEFAULT_HOMEBREW_LOCATION)
 
     def getusersession(self, slot):
         print("User Open", slot)
