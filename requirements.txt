@@ -84,7 +84,7 @@ pyqt6-webengine==6.5.0
     # via -r requirements.in
 pyqt6-webengine-qt6==6.5.2
     # via pyqt6-webengine
-requests==2.31.0
+requests==2.32.2
     # via -r requirements.in
 soupsieve==2.5
     # via beautifulsoup4
