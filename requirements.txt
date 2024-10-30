@@ -26,7 +26,7 @@ click==8.1.7
     # via
     #   black
     #   flask
-cryptography==42.0.4
+cryptography==43.0.1
     # via
     #   -r requirements.in
     #   jwcrypto
