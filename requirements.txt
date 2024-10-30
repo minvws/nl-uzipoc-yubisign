@@ -42,7 +42,7 @@ itsdangerous==2.1.2
     # via flask
 jinja2==3.1.4
     # via flask
-jwcrypto==1.5.5
+jwcrypto==1.5.6
     # via -r requirements.in
 lazy-object-proxy==1.9.0
     # via astroid
