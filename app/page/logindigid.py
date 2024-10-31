@@ -29,11 +29,17 @@ class LoginWithDigiDPage(QWizardPage):
         self.browser.setPage(QWebEnginePage(self.profile, self.browser))
         self.acme.challenges = [{}, {}, {}, {}]
         self.acme.tokens = ["", "", "", ""]
+
+        # First, based on every PIV-slot of the Yubikey an order is created.
+        # This will return a challenge url.
+        #
+        # This URL is fetched, returning a random token. Further in the process, this token (per PIV-slot)
+        # is then saved back into the users' JWT. This is due to that the token is given in the params of the OIDC provider
         for keynum in [1, 2, 3, 4]:
             self.acme.order(keynum)
             self.acme.getchallenge(keynum - 1)
 
-        url = QUrl("https://proeftuin.uzi-online.rdobeheer.nl/oidc/login")
+        url = QUrl("https://proeftuin.uzi-online.irealisatie.nl/oidc/login")
         query = QUrlQuery()
         query.addQueryItem(
             "acme_tokens", ",".join(self.acme.tokens)
@@ -55,10 +61,10 @@ class LoginWithDigiDPage(QWizardPage):
         print(url.toString())
         if (
             url.toString()
-            == "https://proeftuin.uzi-online.rdobeheer.nl/ziekenboeg/users/home"
+            == "https://proeftuin.uzi-online.irealisatie.nl/ziekenboeg/users/home"
         ):
             self.browser.load(
-                QUrl("https://proeftuin.uzi-online.rdobeheer.nl/ziekenboeg/users/jwt")
+                QUrl("https://proeftuin.uzi-online.irealisatie.nl/ziekenboeg/users/jwt")
             )
 
     def captureHtml(self, ok):
@@ -80,6 +86,6 @@ class LoginWithDigiDPage(QWizardPage):
             current_url = self.browser.url().toString()
             if (
                 current_url
-                == "https://proeftuin.uzi-online.rdobeheer.nl/ziekenboeg/users/jwt"
+                == "https://proeftuin.uzi-online.irealisatie.nl/ziekenboeg/users/jwt"
             ):
                 self.browser.page().toHtml(self.htmlCaptured)

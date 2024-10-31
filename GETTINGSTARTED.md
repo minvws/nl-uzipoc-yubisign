@@ -11,3 +11,7 @@ This application requires the `yubico-piv-tool` installed on your computer and t
 1. `python3.13 -m venv .venv`
 2. `pip install -r requirements.in`
 3. `pip install -r requirements.txt`
+
+## Starting 
+
+`python -m app.wizard`

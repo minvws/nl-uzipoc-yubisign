@@ -132,13 +132,21 @@ class Acme:
         token = jwt.JWS(payload="")
         token.add_signature(self.key, alg="ES256", protected=protected)
         headers = {"Content-Type": "application/jose+json"}
+
+        # Request the challenge per PIV-slot from the ACME-server.
+        # This will return a random token, with the status of pending.
+        #
+        # Later on, these tokens from the challenges should be contained in the users' JWT.
         response = requests.post(
             challengeurl, data=token.serialize(), headers=headers, timeout=60
         )
+        returned_json = response.json()
+
         self.debugresponse(response)
         self.nonce = response.headers["Replay-Nonce"]
-        assert response.json()["status"] in ["pending", "valid"]
-        return response.json()["challenges"], response.json()["status"]
+
+        assert returned_json["status"] in ["pending", "valid"]
+        return returned_json["challenges"], returned_json["status"]
 
     def send_challenge_jwt(self, challenge, hw_attestation, uzi_jwt, f9_cert):
         """
@@ -214,9 +222,7 @@ class Acme:
         }
         payload = {
             #    "csr": b64encode(csr).decode().replace('+','-').replace('/','_'),
-            "csr": urlsafe_b64encode(csr)
-            .decode()
-            .rstrip("="),
+            "csr": urlsafe_b64encode(csr).decode().rstrip("="),
         }
         self.debugrequest(protected, payload)
         token = jwt.JWS(payload=json.dumps(payload))
