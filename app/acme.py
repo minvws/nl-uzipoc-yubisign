@@ -61,7 +61,7 @@ class Acme:
         protected = {
             "alg": "ES256",
             "nonce": self.nonce,
-            "url": self.url + "acme/new-acct",
+            "url": self.url + "acme/new-account",
             "jwk": self.key.export_public(True),
         }
         token = jwt.JWS(payload=json.dumps(request))
@@ -69,7 +69,7 @@ class Acme:
         self.debugrequest(protected, request)
         headers = {"Content-Type": "application/jose+json"}
         response = requests.post(
-            self.url + "acme/new-acct",
+            self.url + "acme/new-account",
             data=token.serialize(),
             headers=headers,
             timeout=60,

@@ -45,7 +45,7 @@ class MainWindow(QMainWindow, pkcs):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     pkcs = pkcs()
-    acme = ACME("https://acme.proeftuin.uzi-online.rdobeheer.nl/")
+    acme = ACME("http://localhost:8080/")
 
     mainWindow = MainWindow(pkcs, acme)
     mainWindow.show()
