@@ -134,6 +134,34 @@ class pkcs:
         return b64crt
 
     def makecsr(self, session, private_key, public_key):
+        from asn1crypto import csr as csr_module, x509
+
+        san = x509.GeneralNames(
+            [
+                x509.GeneralName("dns_name", "example.com"),
+                x509.GeneralName("dns_name", "www.example.com"),
+            ]
+        )
+        extensions = [
+            csr_module.CRIAttribute(
+                {
+                    "type": "extension_request",
+                    "values": [
+                        x509.Extensions(
+                            [
+                                x509.Extension(
+                                    {
+                                        "extn_id": "subject_alt_name",
+                                        "critical": False,
+                                        "extn_value": san,
+                                    }
+                                )
+                            ]
+                        )
+                    ],
+                }
+            )
+        ]
         info = CertificationRequestInfo(
             {
                 "version": 0,
@@ -145,6 +173,7 @@ class pkcs:
                         "serial_number": "1337",
                         "country_name": "NL",
                         "organization_name": "CIBG",
+                        # "subject_alternative_name": "Testwaarde",
                     }
                 ),
                 "subject_pk_info": {
@@ -167,7 +196,7 @@ class pkcs:
                         }
                     ),
                 },
-                "attributes": [],
+                "attributes": extensions,
             }
         )
         value = session.sign(
@@ -209,7 +238,8 @@ class pkcs:
         return csr
 
     def savecert(self, slot, keyid, pemcerts):
-        usercert, _rootcert = pemcerts.split("\n\n")
+        # usercert, _rootcert = pemcerts.split("\n\n")
+        usercert, _rootcert = pemcerts.split("\n-----BEGIN CERTIFICATE-----\n")
         cert = pem.unarmor(usercert.encode())[2]
         x509 = Certificate.load(cert)
         subject = x509.subject

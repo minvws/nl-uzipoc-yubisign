@@ -221,13 +221,14 @@ class Acme:
             "kid": self.kid,
         }
         payload = {
-            #    "csr": b64encode(csr).decode().replace('+','-').replace('/','_'),
             "csr": urlsafe_b64encode(csr).decode().rstrip("="),
         }
         self.debugrequest(protected, payload)
         token = jwt.JWS(payload=json.dumps(payload))
         token.add_signature(self.key, alg="ES256", protected=protected)
         headers = {"Content-Type": "application/jose+json"}
+
+        # This calls the finalize method, preparing the certificate
         response = requests.post(
             self.finalize[keynum], data=token.serialize(), headers=headers, timeout=60
         )
@@ -256,7 +257,7 @@ class Acme:
             self.certurl, data=token.serialize(), headers=headers, timeout=60
         )
         self.nonce = response.headers["Replay-Nonce"]
-        self.debugresponse(response)
+        # self.debugresponse(response)
         return response.text
 
     def clean_headers(self, headers):
