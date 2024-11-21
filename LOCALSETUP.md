@@ -32,7 +32,7 @@ In the root of the project and the virtual environment activated, run the comman
 python -m app.wizard
 ```
 
-This will start up the application.
+This will start up the application. Then, walk through the following steps:
 
 ### Flow
 1. ...
