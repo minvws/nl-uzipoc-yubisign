@@ -1,4 +1,5 @@
 # Local setup
+After cloning this repository, you can follow this document to set up and run the application. 
 
 ## Requirements
 - `python3.13`
