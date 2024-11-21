@@ -207,7 +207,7 @@ class Acme:
         assert response.json()["status"] in ["pending", "valid"]
         return response.json()["status"], response.json()["url"]
 
-    def final(self, keynum, csr):
+    def final(self, keynum, csr, jwt_token: str):
         """
         There is an order, we are correct. Now we get to request a certificate.
         To do this we provide a CSR and that gets signed with the root/sub-CA
@@ -226,7 +226,10 @@ class Acme:
         self.debugrequest(protected, payload)
         token = jwt.JWS(payload=json.dumps(payload))
         token.add_signature(self.key, alg="ES256", protected=protected)
-        headers = {"Content-Type": "application/jose+json"}
+        headers = {
+            "Content-Type": "application/jose+json",
+            "X-Acme-Jwt": jwt_token,
+        }
 
         # This calls the finalize method, preparing the certificate
         response = requests.post(

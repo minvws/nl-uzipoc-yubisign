@@ -52,6 +52,6 @@ class ACME:
     def wait(self, num):
         self.status, _url = self.client.notify(self.challenges[num]["url"])
 
-    def final(self, keynum, hw_csr):
-        self.client.final(keynum, hw_csr)
+    def final(self, keynum, hw_csr, jwt: str):
+        self.client.final(keynum, hw_csr, jwt)
         return self.client.getcert()
