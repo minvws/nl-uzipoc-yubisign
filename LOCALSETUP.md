@@ -6,15 +6,20 @@
 - `git`
 
 ## Installation
-### 1.1 Creating a virtual environment
-To create an isolated environment where we can install the Python requirements in, use the below command to use the `venv` package:
+### 1.1 Creating and activating an virtual environment
+To create an isolated environment where we can install the Python requirements in, use the below command to use the `venv` package.
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 ```
 
-This will create the environment and activate it.
+For UNIX users, the environment can be activated with the following command.
+```bash
+source .venv/bin/activate
+```
+
+For Windows users, this is `.\venv\Scripts\activate`.
 
 ### 1.2 Installing the requirements
 In the root of the project, open up a terminal and run the command underneath.
