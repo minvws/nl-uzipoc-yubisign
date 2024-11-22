@@ -2,6 +2,7 @@
 After cloning this repository, you can follow this document to set up and run the application. 
 
 ## Requirements
+This application requires the `yubico-piv-tool` installed on your computer and therefor the `/usr/lib64/libykcs11.so.2` file. However, this means it currently only works on UNIX based systems. Next to that, make sure you have the following tools:
 - `python3.13`
 - `docker`
 - `git`
