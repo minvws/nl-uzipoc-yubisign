@@ -238,7 +238,6 @@ class pkcs:
         return csr
 
     def savecert(self, slot, keyid, pemcerts):
-        # usercert, _rootcert = pemcerts.split("\n\n")
         usercert, _rootcert = pemcerts.split("\n-----BEGIN CERTIFICATE-----\n")
         cert = pem.unarmor(usercert.encode())[2]
         x509 = Certificate.load(cert)
