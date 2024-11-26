@@ -26,9 +26,13 @@ class pkcs:
     attests = {}
     keys = {1: 1, 2: 2, 3: 3, 4: 4}
 
+    _DEFAULT_LOCATION = "/usr/lib64/libykcs11.so.2"
+
     def __init__(self):
         self.pkcs11 = PyKCS11.PyKCS11Lib()
-        self.pkcs11.load("/usr/lib64/libykcs11.so.2")
+
+        # X-X
+        self.pkcs11.load(self._DEFAULT_LOCATION)
 
     def getusersession(self, slot):
         print("User Open", slot)
