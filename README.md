@@ -43,3 +43,6 @@ Als er een certificaat is opgehaald wordt dit opgeslagen op de juiste plek in de
 Door het laden van de yubikey pkcs11 library in de browser, office, mac os, windows of linux plekken (zoals beschreven door yubico) kan de yubikey daarna
 worden gebruikt zoals een UZIpas ook gebruikt kan worden. Voor digitaal ondertekenen van documenten, verzoeken en om in te loggen in de browser bij
 partijen die UZI certificaten login mogelijk maken.
+
+# Licentie
+Dit project valt onder de [EU PL 1.2 license](./LICENSE.txt).
