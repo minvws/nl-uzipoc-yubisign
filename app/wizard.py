@@ -20,9 +20,10 @@ from .page.savetoyubi import SaveToYubiKeyPage
 from .page.profit import ProfitPage
 
 
-class MainWindow(QMainWindow, pkcs):
-    def __init__(self, mypkcs, myacme):
+class MainWindow(QMainWindow):
+    def __init__(self, mypkcs: pkcs, myacme):
         super().__init__()
+
         self.setWindowTitle("YubiKey Wizard")
         self.resize(1024, 768)
 
@@ -49,12 +50,11 @@ if __name__ == "__main__":
 
     # This will search default locations and fall back to the PYKCS11LIB environment variable
     pkcslib = PKCS11LibFinder().find()
-
-    pkcs = pkcs(pkcslib)
+    pkcscls = pkcs(pykcs11lib=pkcslib)
 
     # This expects the new ACME server to run on this port. Later on, make this configurable
     acme = ACME("http://localhost:8080/")
 
-    mainWindow = MainWindow(pkcs, acme)
+    mainWindow = MainWindow(pkcscls, acme)
     mainWindow.show()
     app.exec()
