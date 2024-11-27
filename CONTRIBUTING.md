@@ -1,0 +1,2 @@
+# Contributing
+While this project is in it's PoC phase, every contribution must first be planned on the [UZI project board on GitHub](https://github.com/orgs/minvws/projects/34). From that point on, additional feature branches can be made from the `uzipoc_q4_2024` branch.
