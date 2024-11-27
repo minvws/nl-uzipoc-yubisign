@@ -1,8 +1,11 @@
 from PyQt6.QtWidgets import QWizardPage, QVBoxLayout, QLabel
 from PyQt6.QtCore import QTimer
+from app import appacme
 
 
 class RequestCertificatePage(QWizardPage):
+    acme: appacme.ACME
+
     def __init__(self, mypkcs, myacme, parent=None):
         super().__init__(parent)
         self.acme = myacme
@@ -24,6 +27,6 @@ class RequestCertificatePage(QWizardPage):
             self.acme.send_request(hwattest, jwttoken, keynum - 1, f9crt)
             self.acme.wait(keynum - 1)
             csr = self.pkcs.getcsr(selectedYubiKeySlot, keynum)
-            cert = self.acme.final(keynum, csr)
+            cert = self.acme.final(keynum, csr, jwttoken)
             self.pkcs.savecert(selectedYubiKeySlot, keynum, cert)
         self.wizard().next()  # Programmatically trigger the Next button
