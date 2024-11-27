@@ -1,15 +1,27 @@
 from unittest.mock import MagicMock, patch
+
+import pytest
 from app.pkcs_lib_finder import PKCS11LibFinder, PyKCS11
 
 
-@patch("app.pkcs_lib_finder.PyKCS11.PyKCS11Lib.load")
-def test_env_file(load_mock: MagicMock):
-    def badload(filepath: str | None = None, **kwargs):
-        # Only raise an error when we're searching for a file
-        if filepath:
-            raise PyKCS11.PyKCS11Error("not able to find lib")
+@patch(
+    "app.pkcs_lib_finder.PyKCS11.PyKCS11Lib.load",
+    side_effect=PyKCS11.PyKCS11Error("No library found"),
+)
+def test_lib_not_found(load_mock: MagicMock):
+    with pytest.raises(PyKCS11.PyKCS11Error):
+        finder = PKCS11LibFinder()
+        finder.find()
 
-    load_mock.side_effect = badload
-    # TODO mock the file open to not being able to find the file. Fallback to the env variable
+    assert load_mock.call_count == 8
+
+
+@patch(
+    "app.pkcs_lib_finder.PyKCS11.PyKCS11Lib.load",
+    side_effect=None,
+)
+def test_success(load_mock: MagicMock):
     finder = PKCS11LibFinder()
     finder.find()
+
+    assert load_mock.call_count == 1
