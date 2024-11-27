@@ -7,6 +7,8 @@ from PyQt6.QtWidgets import (
     QWizard,
 )
 
+from app.pkcs_lib_finder import PKCS11LibFinder
+
 from .pkcs import pkcs
 from .appacme import ACME
 from .page.welcome import WelcomePage
@@ -44,7 +46,11 @@ class MainWindow(QMainWindow, pkcs):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    pkcs = pkcs()
+
+    # This will search default locations and fall back to the PYKCS11LIB environment variable
+    pkcslib = PKCS11LibFinder().find()
+
+    pkcs = pkcs(pkcslib)
     acme = ACME("https://acme.proeftuin.uzi-online.rdobeheer.nl/")
 
     mainWindow = MainWindow(pkcs, acme)
