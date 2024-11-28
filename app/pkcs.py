@@ -26,9 +26,13 @@ class pkcs:
     attests = {}
     keys = {1: 1, 2: 2, 3: 3, 4: 4}
 
-    def __init__(self):
+    _yubikey_pin: str
+
+    def __init__(self, yubikey_pin: str):
         self.pkcs11 = PyKCS11.PyKCS11Lib()
         self.pkcs11.load("/usr/lib64/libykcs11.so.2")
+
+        self._yubikey_pin = yubikey_pin
 
     def getusersession(self, slot):
         print("User Open", slot)
@@ -36,7 +40,7 @@ class pkcs:
             # self.sessions[slot] = self.pkcs11.openSession(slot)
             # self.sessions[slot].login("123456")
             self.sessions[slot] = self.pkcs11.openSession(slot)
-            self.sessions[slot].login("123456")
+            self.sessions[slot].login(self._yubikey_pin)
         return self.sessions[slot]
 
     def getsession(self, slot):

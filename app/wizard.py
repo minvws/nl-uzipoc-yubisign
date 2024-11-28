@@ -1,3 +1,4 @@
+from os import getenv
 import sys
 
 from PyQt6.QtWidgets import (
@@ -17,8 +18,13 @@ from .page.requestcert import RequestCertificatePage
 from .page.savetoyubi import SaveToYubiKeyPage
 from .page.profit import ProfitPage
 
+from dotenv import load_dotenv
 
-class MainWindow(QMainWindow, pkcs):
+DEFAULT_ACME_CA_SERVER_URL = "https://acme.proeftuin.uzi-online.rdobeheer.nl/"
+DEFAULT_YUBIKEY_PIN = "123456"
+
+
+class MainWindow(QMainWindow):
     def __init__(self, mypkcs, myacme):
         super().__init__()
         self.setWindowTitle("YubiKey Wizard")
@@ -43,10 +49,17 @@ class MainWindow(QMainWindow, pkcs):
 
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    pkcs = pkcs()
-    acme = ACME("https://acme.proeftuin.uzi-online.rdobeheer.nl/")
+    load_dotenv()
 
-    mainWindow = MainWindow(pkcs, acme)
+    acme_ca_server_url = getenv("ACME_CA_SERVER", DEFAULT_ACME_CA_SERVER_URL)
+    yubikey_pin = getenv(
+        "YUBIKEY_PIN",
+    )
+    acme = ACME(acme_ca_server_url)
+
+    pkcsobj = pkcs()
+    app = QApplication(sys.argv)
+
+    mainWindow = MainWindow(pkcsobj, acme)
     mainWindow.show()
     app.exec()
