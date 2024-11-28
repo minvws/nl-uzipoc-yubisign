@@ -20,13 +20,17 @@ from .page.profit import ProfitPage
 
 from dotenv import load_dotenv
 
+import urllib.parse
+
 DEFAULT_ACME_CA_SERVER_URL = "https://acme.proeftuin.uzi-online.rdobeheer.nl/"
 DEFAULT_YUBIKEY_PIN = "123456"
 DEFAULT_PROEFTUIN_OIDC_LOGIN_URL = "https://proeftuin.uzi-online.rdobeheer.nl"
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, mypkcs, myacme, oidc_provider_base_url: str):
+    def __init__(
+        self, mypkcs, myacme, oidc_provider_base_url: urllib.parse.ParseResult
+    ):
         super().__init__()
         self.setWindowTitle("YubiKey Wizard")
         self.resize(1024, 768)
@@ -54,15 +58,15 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     pkcsobj = pkcs()
 
-    acme_ca_server_url = getenv("ACME_CA_SERVER", DEFAULT_ACME_CA_SERVER_URL)
-    oidc_provider_url = getenv(
-        "OIDC_PROVIDER_BASE_URL", DEFAULT_PROEFTUIN_OIDC_LOGIN_URL
+    oidc_provider_url = urllib.parse.urlparse(
+        getenv("OIDC_PROVIDER_BASE_URL", DEFAULT_PROEFTUIN_OIDC_LOGIN_URL)
     )
+    acme_ca_server_url = getenv("ACME_CA_SERVER", DEFAULT_ACME_CA_SERVER_URL)
     yubikey_pin = getenv(
         "YUBIKEY_PIN",
     )
     acme = ACME(acme_ca_server_url)
 
-    mainWindow = MainWindow(pkcsobj, acme)
+    mainWindow = MainWindow(pkcsobj, acme, oidc_provider_url)
     mainWindow.show()
     app.exec()

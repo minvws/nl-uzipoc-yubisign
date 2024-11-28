@@ -13,6 +13,8 @@ from ..appacme import ACME
 
 from bs4 import BeautifulSoup
 
+import urllib.parse
+
 
 class LoginWithDigiDPage(QWizardPage):
     profile = None
@@ -20,12 +22,12 @@ class LoginWithDigiDPage(QWizardPage):
 
     acme: ACME
 
-    _oidc_provider_base_url: str
+    _oidc_provider_base_url: urllib.parse.ParseResult
 
     def __init__(
         self,
         myacme: ACME,
-        oidc_provider_base_url: str,
+        oidc_provider_base_url: urllib.parse.ParseResult,
         parent=None,
     ):
         super().__init__(parent)
@@ -33,7 +35,9 @@ class LoginWithDigiDPage(QWizardPage):
         self._oidc_provider_base_url = oidc_provider_base_url
 
     def _get_jwt_url(self):
-        return f"{self._oidc_provider_base_url}/ziekenboeg/users/jwt"
+        return urllib.parse.urljoin(
+            self._oidc_provider_base_url.geturl(), "ziekenboeg/users/jwt"
+        )
 
     def initializePage(self):
         layout = QVBoxLayout(self)
@@ -52,7 +56,11 @@ class LoginWithDigiDPage(QWizardPage):
             self.acme.order(keynum)
             self.acme.getchallenge(keynum - 1)
 
-        url = QUrl(f"{self._oidc_provider_base_url}/oidc/login")
+        login_url = urllib.parse.urljoin(
+            self._oidc_provider_base_url.geturl(), "/oidc/login"
+        )
+        url = QUrl(login_url)
+
         query = QUrlQuery()
         query.addQueryItem(
             "acme_tokens", ",".join(self.acme.tokens)
@@ -72,7 +80,11 @@ class LoginWithDigiDPage(QWizardPage):
 
     def onUrlChanged(self, url):
         print(url.toString())
-        if url.toString() == f"{self._oidc_provider_base_url}/ziekenboeg/users/home":
+
+        user_home_url = urllib.parse.urljoin(
+            self._oidc_provider_base_url.geturl(), " /ziekenboeg/users/home"
+        )
+        if url.toString() == user_home_url:
             self.browser.load(QUrl(self._get_jwt_url()))
 
     def captureHtml(self, ok):
