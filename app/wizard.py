@@ -22,10 +22,11 @@ from dotenv import load_dotenv
 
 DEFAULT_ACME_CA_SERVER_URL = "https://acme.proeftuin.uzi-online.rdobeheer.nl/"
 DEFAULT_YUBIKEY_PIN = "123456"
+DEFAULT_PROEFTUIN_OIDC_LOGIN_URL = "https://proeftuin.uzi-online.rdobeheer.nl"
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, mypkcs, myacme):
+    def __init__(self, mypkcs, myacme, oidc_provider_base_url: str):
         super().__init__()
         self.setWindowTitle("YubiKey Wizard")
         self.resize(1024, 768)
@@ -38,7 +39,7 @@ class MainWindow(QMainWindow):
         self.wizard.addPage(WelcomePage())
         self.wizard.addPage(SelectYubiKeyPage(mypkcs))
         self.wizard.addPage(CreateRSAKeysPage(mypkcs))
-        self.wizard.addPage(LoginWithDigiDPage(myacme))
+        self.wizard.addPage(LoginWithDigiDPage(myacme, oidc_provider_base_url))
         self.wizard.addPage(RequestCertificatePage(mypkcs, myacme))
         self.wizard.addPage(SaveToYubiKeyPage(mypkcs))
         self.wizard.addPage(ProfitPage())
@@ -52,6 +53,9 @@ if __name__ == "__main__":
     load_dotenv()
 
     acme_ca_server_url = getenv("ACME_CA_SERVER", DEFAULT_ACME_CA_SERVER_URL)
+    oidc_provider_url = getenv(
+        "OIDC_PROVIDER_BASE_URL", DEFAULT_PROEFTUIN_OIDC_LOGIN_URL
+    )
     yubikey_pin = getenv(
         "YUBIKEY_PIN",
     )

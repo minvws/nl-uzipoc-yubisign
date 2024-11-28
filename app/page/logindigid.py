@@ -20,12 +20,20 @@ class LoginWithDigiDPage(QWizardPage):
 
     acme: ACME
 
-    _PROEFTUIN_OIDC_LOGIN_URL = "https://proeftuin.uzi-online.rdobeheer.nl/oidc/login"
+    _oidc_provider_base_url: str
 
-    def __init__(self, myacme: ACME, parent=None):
+    def __init__(
+        self,
+        myacme: ACME,
+        oidc_provider_base_url: str,
+        parent=None,
+    ):
         super().__init__(parent)
-        # super(LoginWithDigiDPage, self).__init__(parent)
         self.acme = myacme
+        self._oidc_provider_base_url = oidc_provider_base_url
+
+    def _get_jwt_url(self):
+        return f"{self._oidc_provider_base_url}/ziekenboeg/users/jwt"
 
     def initializePage(self):
         layout = QVBoxLayout(self)
@@ -38,7 +46,7 @@ class LoginWithDigiDPage(QWizardPage):
             self.acme.order(keynum)
             self.acme.getchallenge(keynum - 1)
 
-        url = QUrl(self._PROEFTUIN_OIDC_LOGIN_URL)
+        url = QUrl(f"{self._oidc_provider_base_url}/oidc/login")
         query = QUrlQuery()
         query.addQueryItem(
             "acme_tokens", ",".join(self.acme.tokens)
@@ -58,13 +66,8 @@ class LoginWithDigiDPage(QWizardPage):
 
     def onUrlChanged(self, url):
         print(url.toString())
-        if (
-            url.toString()
-            == "https://proeftuin.uzi-online.rdobeheer.nl/ziekenboeg/users/home"
-        ):
-            self.browser.load(
-                QUrl("https://proeftuin.uzi-online.rdobeheer.nl/ziekenboeg/users/jwt")
-            )
+        if url.toString() == f"{self._oidc_provider_base_url}/ziekenboeg/users/home":
+            self.browser.load(QUrl(self._get_jwt_url()))
 
     def captureHtml(self, ok):
         if ok:
@@ -83,8 +86,5 @@ class LoginWithDigiDPage(QWizardPage):
     def onLoadFinished(self, ok):
         if ok:
             current_url = self.browser.url().toString()
-            if (
-                current_url
-                == "https://proeftuin.uzi-online.rdobeheer.nl/ziekenboeg/users/jwt"
-            ):
+            if current_url == self._get_jwt_url():
                 self.browser.page().toHtml(self.htmlCaptured)
