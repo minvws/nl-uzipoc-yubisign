@@ -9,6 +9,7 @@ from PyQt6.QtWebEngineCore import (
 
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtCore import QUrl, QUrlQuery
+from ..appacme import ACME
 
 from bs4 import BeautifulSoup
 
@@ -17,7 +18,11 @@ class LoginWithDigiDPage(QWizardPage):
     profile = None
     browser = None
 
-    def __init__(self, myacme, parent=None):
+    acme: ACME
+
+    _PROEFTUIN_OIDC_LOGIN_URL = "https://proeftuin.uzi-online.rdobeheer.nl/oidc/login"
+
+    def __init__(self, myacme: ACME, parent=None):
         super().__init__(parent)
         # super(LoginWithDigiDPage, self).__init__(parent)
         self.acme = myacme
@@ -33,7 +38,7 @@ class LoginWithDigiDPage(QWizardPage):
             self.acme.order(keynum)
             self.acme.getchallenge(keynum - 1)
 
-        url = QUrl("https://proeftuin.uzi-online.rdobeheer.nl/oidc/login")
+        url = QUrl(self._PROEFTUIN_OIDC_LOGIN_URL)
         query = QUrlQuery()
         query.addQueryItem(
             "acme_tokens", ",".join(self.acme.tokens)
