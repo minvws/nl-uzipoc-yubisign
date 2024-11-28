@@ -173,7 +173,6 @@ class pkcs:
                         "serial_number": "1337",
                         "country_name": "NL",
                         "organization_name": "CIBG",
-                        # "subject_alternative_name": "Testwaarde",
                     }
                 ),
                 "subject_pk_info": {
