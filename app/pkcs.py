@@ -37,8 +37,6 @@ class pkcs:
     def getusersession(self, slot):
         print("User Open", slot)
         if slot not in self.sessions:
-            # self.sessions[slot] = self.pkcs11.openSession(slot)
-            # self.sessions[slot].login("123456")
             self.sessions[slot] = self.pkcs11.openSession(slot)
             self.sessions[slot].login(self._yubikey_pin)
         return self.sessions[slot]
