@@ -45,7 +45,9 @@ class MainWindow(QMainWindow, pkcs):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     pkcs = pkcs()
-    acme = ACME("https://acme.proeftuin.uzi-online.rdobeheer.nl/")
+
+    # This expects the new ACME server to run on this port. Later on, make this configurable
+    acme = ACME("http://localhost:8080/")
 
     mainWindow = MainWindow(pkcs, acme)
     mainWindow.show()

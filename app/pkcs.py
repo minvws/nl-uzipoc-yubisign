@@ -20,6 +20,9 @@ class AlgorithmIdentifier(Sequence):
 
 
 class pkcs:
+    DEFAULT_LIB_LOCATION = "/usr/lib64/libykcs11.so.2"
+    DEFAULT_HOMEBREW_LOCATION = "/opt/homebrew/lib/libykcs11.dylib"
+
     pkcs11 = None
     sessions = {}
     attest = None
@@ -28,7 +31,9 @@ class pkcs:
 
     def __init__(self):
         self.pkcs11 = PyKCS11.PyKCS11Lib()
-        self.pkcs11.load("/usr/lib64/libykcs11.so.2")
+
+        # TODO make this configurable via environment variable. For every machine, then can be different
+        self.pkcs11.load(self.DEFAULT_HOMEBREW_LOCATION)
 
     def getusersession(self, slot):
         print("User Open", slot)
@@ -129,6 +134,34 @@ class pkcs:
         return b64crt
 
     def makecsr(self, session, private_key, public_key):
+        from asn1crypto import csr as csr_module, x509
+
+        san = x509.GeneralNames(
+            [
+                x509.GeneralName("dns_name", "example.com"),
+                x509.GeneralName("dns_name", "www.example.com"),
+            ]
+        )
+        extensions = [
+            csr_module.CRIAttribute(
+                {
+                    "type": "extension_request",
+                    "values": [
+                        x509.Extensions(
+                            [
+                                x509.Extension(
+                                    {
+                                        "extn_id": "subject_alt_name",
+                                        "critical": False,
+                                        "extn_value": san,
+                                    }
+                                )
+                            ]
+                        )
+                    ],
+                }
+            )
+        ]
         info = CertificationRequestInfo(
             {
                 "version": 0,
@@ -162,7 +195,7 @@ class pkcs:
                         }
                     ),
                 },
-                "attributes": [],
+                "attributes": extensions,
             }
         )
         value = session.sign(
@@ -204,7 +237,7 @@ class pkcs:
         return csr
 
     def savecert(self, slot, keyid, pemcerts):
-        usercert, _rootcert = pemcerts.split("\n\n")
+        usercert, _rootcert = pemcerts.split("\n-----BEGIN CERTIFICATE-----\n")
         cert = pem.unarmor(usercert.encode())[2]
         x509 = Certificate.load(cert)
         subject = x509.subject
