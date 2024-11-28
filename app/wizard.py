@@ -22,9 +22,9 @@ from dotenv import load_dotenv
 
 import urllib.parse
 
-DEFAULT_ACME_CA_SERVER_URL = "https://acme.proeftuin.uzi-online.rdobeheer.nl/"
+DEFAULT_ACME_CA_SERVER_URL = "https://acme.proeftuin.uzi-online.irealisatie.nl/"
 DEFAULT_YUBIKEY_PIN = "123456"
-DEFAULT_PROEFTUIN_OIDC_LOGIN_URL = "https://proeftuin.uzi-online.rdobeheer.nl"
+DEFAULT_PROEFTUIN_OIDC_LOGIN_URL = "https://proeftuin.uzi-online.irealisatie.nl"
 
 
 class MainWindow(QMainWindow):
@@ -56,15 +56,17 @@ class MainWindow(QMainWindow):
 if __name__ == "__main__":
     load_dotenv()
     app = QApplication(sys.argv)
-    pkcsobj = pkcs()
 
     oidc_provider_url = urllib.parse.urlparse(
         getenv("OIDC_PROVIDER_BASE_URL", DEFAULT_PROEFTUIN_OIDC_LOGIN_URL)
     )
-    acme_ca_server_url = getenv("ACME_CA_SERVER", DEFAULT_ACME_CA_SERVER_URL)
+    acme_ca_server_url = urllib.parse.urlparse(
+        getenv("ACME_CA_SERVER", DEFAULT_ACME_CA_SERVER_URL)
+    )
     yubikey_pin = getenv(
         "YUBIKEY_PIN",
     )
+    pkcsobj = pkcs(yubikey_pin)
     acme = ACME(acme_ca_server_url)
 
     mainWindow = MainWindow(pkcsobj, acme, oidc_provider_url)
