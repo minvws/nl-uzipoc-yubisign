@@ -42,6 +42,12 @@ class LoginWithDigiDPage(QWizardPage):
         self.browser.setPage(QWebEnginePage(self.profile, self.browser))
         self.acme.challenges = [{}, {}, {}, {}]
         self.acme.tokens = ["", "", "", ""]
+
+        # First, based on every PIV-slot of the Yubikey an order is created.
+        # This will return a challenge url.
+        #
+        # This URL is fetched, returning a random token. Further in the process, this token (per PIV-slot)
+        # is then saved back into the users' JWT. This is due to that the token is given in the params of the OIDC provider
         for keynum in [1, 2, 3, 4]:
             self.acme.order(keynum)
             self.acme.getchallenge(keynum - 1)

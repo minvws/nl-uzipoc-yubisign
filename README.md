@@ -60,3 +60,5 @@ Er zijn een aantal variabelen te configureren via een `.env` bestand. Kopieer en
 | `OIDC_PROVIDER_BASE_URL` |    `"https://proeftuin.uzi-online.rdobeheer.nl"`    | `str` |
 
 Standaard word gebruikt gemaakt de volgende waarden: `"https://acme.proeftuin.uzi-online.rdobeheer.nl/"` voor de CA server en `123456` voor de YubiKey PIN. Dit is te configureren in een `.env` bestand. Kopieer en hernoem hiervoor het `.env.example` bestand en vul de desbetreffende waardes in.
+# Licentie
+Dit project valt onder de [EU PL 1.2 license](./LICENSE.txt).

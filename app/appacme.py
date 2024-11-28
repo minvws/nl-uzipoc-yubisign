@@ -28,7 +28,7 @@ class ACME:
         Create an account. As per acme standard an email needs
         to be provided.
         """
-        areq = {"termsOfServiceAgreed": True, "contacts": ["email@example.com"]}
+        areq = {"termsOfServiceAgreed": True, "contact": ["mailto:email@example.com"]}
         self.client.account_request(areq)
 
     def order(self, keynum):
@@ -52,6 +52,6 @@ class ACME:
     def wait(self, num):
         self.status, _url = self.client.notify(self.challenges[num]["url"])
 
-    def final(self, keynum, hw_csr):
-        self.client.final(keynum, hw_csr)
+    def final(self, keynum, hw_csr, jwt: str):
+        self.client.final(keynum, hw_csr, jwt)
         return self.client.getcert()

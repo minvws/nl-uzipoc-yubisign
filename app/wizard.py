@@ -51,6 +51,8 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     load_dotenv()
+    app = QApplication(sys.argv)
+    pkcsobj = pkcs()
 
     acme_ca_server_url = getenv("ACME_CA_SERVER", DEFAULT_ACME_CA_SERVER_URL)
     oidc_provider_url = getenv(
@@ -60,9 +62,6 @@ if __name__ == "__main__":
         "YUBIKEY_PIN",
     )
     acme = ACME(acme_ca_server_url)
-
-    pkcsobj = pkcs()
-    app = QApplication(sys.argv)
 
     mainWindow = MainWindow(pkcsobj, acme)
     mainWindow.show()
