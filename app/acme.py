@@ -260,7 +260,6 @@ class Acme:
             self.certurl, data=token.serialize(), headers=headers, timeout=60
         )
         self.nonce = response.headers["Replay-Nonce"]
-        # self.debugresponse(response)
         return response.text
 
     def clean_headers(self, headers):
