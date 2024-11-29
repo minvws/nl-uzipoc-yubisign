@@ -1,9 +1,11 @@
-# Disclaimer
+# nl uzipoc-yubisign
+In order to automate certificate issuance for UZI, this PoC was done with a YubiKey (an hardware token) and an ACME server. The keypairs are generated on the YubiKey and the certificate is issued by the ACME server. This document will give you an high overview.
 
+## Disclaimer
 This Repository is created as a PoC (Proof of Concept) as part of the project _Toekomstbestendig maken UZI_, and
 **should not be used as is in any production environment**.
 
-# Wat doet dit?
+## Wat doet dit?
 
 Dit neemt een yubikey (doe maar versie 5) en maakt daarin de PIV module _leeg_
 
@@ -48,6 +50,43 @@ Als er een certificaat is opgehaald wordt dit opgeslagen op de juiste plek in de
 Door het laden van de yubikey pkcs11 library in de browser, office, mac os, windows of linux plekken (zoals beschreven door yubico) kan de yubikey daarna
 worden gebruikt zoals een UZIpas ook gebruikt kan worden. Voor digitaal ondertekenen van documenten, verzoeken en om in te loggen in de browser bij
 partijen die UZI certificaten login mogelijk maken.
+
+#### Diagram flow
+This diagram expecst that the key is already plugged in the user's computer.
+
+```mermaid
+sequenceDiagram
+    actor APP
+    participant YUBIKEY
+
+    APP->>YUBIKEY: 1. Sends request to empty the Yubikeys certificates
+    YUBIKEY-->YUBIKEY: Empties the certificates
+
+    APP->>YUBIKEY: 2. Sends request to generate 4 new private key pairs
+    YUBIKEY-->YUBIKEY: 2.1 Create key pair for PIV Authentication
+    YUBIKEY-->YUBIKEY: 2.2 Create key pair for Digital Signature
+    YUBIKEY-->YUBIKEY: 2.3 Create key pair for Key Management
+    YUBIKEY-->YUBIKEY: 2.4 Create key pair for Card Authentication
+
+    create participant MAX
+    APP->>MAX: 3. Opens browser to login the user
+    MAX-->MAX: 3.1 Validates the user
+    MAX-->>APP: Returns the JWT containing the user information.
+
+    APP->>APP: 4. Per generated key pair, <br> an certificate signing request (CSR)<br> is created and signed by the private key.
+
+    create participant BOULDER_FORK
+    loop 5. For every certificate signing request (CSR)
+        APP->>BOULDER_FORK: Validate every certificate signing request with the corresponding attestation certificate
+        BOULDER_FORK-->>APP: OK
+    end
+
+    loop 6. For every key pair
+        APP->>BOULDER_FORK: Request certificate for every key pair, also using the users' JWT
+        BOULDER_FORK-->>APP: OK
+        BOULDER_FORK-->>YUBIKEY: Save certificates
+    end
+```
 
 ## Configureren omgevingsvariabelen
 
