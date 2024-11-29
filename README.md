@@ -1,4 +1,4 @@
-# nl uzipoc-yubisign
+# Yubisign PoC
 In order to automate certificate issuance for UZI, this PoC was done with a YubiKey (an hardware token) and an ACME server. The keypairs are generated on the YubiKey and the certificate is issued by the ACME server. This document will give you an high overview.
 
 ## Disclaimer
