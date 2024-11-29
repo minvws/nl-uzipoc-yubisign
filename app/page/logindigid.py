@@ -57,7 +57,7 @@ class LoginWithDigiDPage(QWizardPage):
             self.acme.getchallenge(keynum - 1)
 
         login_url = urllib.parse.urljoin(
-            self._oidc_provider_base_url.geturl(), "/oidc/login"
+            self._oidc_provider_base_url.geturl(), "oidc/login"
         )
         url = QUrl(login_url)
 
@@ -82,7 +82,7 @@ class LoginWithDigiDPage(QWizardPage):
         print(url.toString())
 
         user_home_url = urllib.parse.urljoin(
-            self._oidc_provider_base_url.geturl(), " /ziekenboeg/users/home"
+            self._oidc_provider_base_url.geturl(), "ziekenboeg/users/home"
         )
         if url.toString() == user_home_url:
             self.browser.load(QUrl(self._get_jwt_url()))
