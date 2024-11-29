@@ -28,7 +28,7 @@ class SelectYubiKeyPage(QWizardPage):
 			try:
 				info = self.pkcs.pkcs11.getTokenInfo(slot)
 				yubikeys += [(info.model, info.serialNumber, info.label, slot)]
-			except:
+			except Exception:
 				pass
 
 		for name, serial, available, slot in yubikeys:

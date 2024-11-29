@@ -40,7 +40,7 @@ class Worker(QObject):
 			)
 			self.pkcs.delsession(self.selectedYubiKeySlot)
 			# print("done")
-		except:
+		except Exception:
 			print("Bla")
 		finally:
 			print("** Worker done", self.currentStep)
