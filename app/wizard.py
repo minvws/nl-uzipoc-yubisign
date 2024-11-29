@@ -1,3 +1,4 @@
+from os import getenv
 import sys
 
 from PyQt6.QtWidgets import (
@@ -19,9 +20,18 @@ from .page.requestcert import RequestCertificatePage
 from .page.savetoyubi import SaveToYubiKeyPage
 from .page.profit import ProfitPage
 
+import urllib.parse
+from dotenv import load_dotenv
+
+DEFAULT_ACME_CA_SERVER_URL = "https://acme.proeftuin.uzi-online.irealisatie.nl"
+DEFAULT_YUBIKEY_PIN = "123456"
+DEFAULT_PROEFTUIN_OIDC_LOGIN_URL = "https://proeftuin.uzi-online.irealisatie.nl"
+
 
 class MainWindow(QMainWindow):
-    def __init__(self, mypkcs: pkcs, myacme):
+    def __init__(
+        self, mypkcs, myacme, oidc_provider_base_url: urllib.parse.ParseResult
+    ):
         super().__init__()
 
         self.setWindowTitle("YubiKey Wizard")
@@ -35,7 +45,7 @@ class MainWindow(QMainWindow):
         self.wizard.addPage(WelcomePage())
         self.wizard.addPage(SelectYubiKeyPage(mypkcs))
         self.wizard.addPage(CreateRSAKeysPage(mypkcs))
-        self.wizard.addPage(LoginWithDigiDPage(myacme))
+        self.wizard.addPage(LoginWithDigiDPage(myacme, oidc_provider_base_url))
         self.wizard.addPage(RequestCertificatePage(mypkcs, myacme))
         self.wizard.addPage(SaveToYubiKeyPage(mypkcs))
         self.wizard.addPage(ProfitPage())
@@ -46,15 +56,26 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
+    load_dotenv()
     app = QApplication(sys.argv)
 
+    yubikey_pin = getenv(
+        "YUBIKEY_PIN",
+    )
     # This will search default locations and fall back to the PYKCS11LIB environment variable
     pkcslib = PKCS11LibFinder().find()
-    pkcscls = pkcs(pykcs11lib=pkcslib)
+    pkcscls = pkcs(pykcs11lib=pkcslib, yubikey_pin=yubikey_pin)
 
-    # This expects the new ACME server to run on this port. Later on, make this configurable
-    acme = ACME("http://localhost:8080/")
+    oidc_provider_url = urllib.parse.urlparse(
+        getenv("OIDC_PROVIDER_BASE_URL", DEFAULT_PROEFTUIN_OIDC_LOGIN_URL)
+    )
+    acme_ca_server_url = urllib.parse.urlparse(
+        getenv("ACME_CA_SERVER", DEFAULT_ACME_CA_SERVER_URL)
+    )
 
-    mainWindow = MainWindow(pkcscls, acme)
+    pkcsobj = pkcs(yubikey_pin)
+    acme = ACME(acme_ca_server_url)
+
+    mainWindow = MainWindow(pkcsobj, acme, oidc_provider_url)
     mainWindow.show()
     app.exec()

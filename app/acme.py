@@ -4,9 +4,11 @@ from base64 import urlsafe_b64encode
 import requests
 from jwcrypto import jwk, jwt
 
+import urllib.parse
+
 
 class Acme:
-    url = None
+    url: urllib.parse.ParseResult
     key = None
     nonce = None
     kid = None
@@ -14,7 +16,7 @@ class Acme:
     certurl = None
     finalize = {}
 
-    def __init__(self, url):
+    def __init__(self, url: urllib.parse.ParseResult):
         self.url = url
 
     def debugrequest(self, protected, payload):
@@ -47,7 +49,11 @@ class Acme:
         without having to use the previous nonce. This is stored in self.nonce
         as with all updates, as every request answers with a new nonce.
         """
-        response = requests.get(self.url + "acme/new-nonce", timeout=60)
+        new_nonce_url = urllib.parse.urljoin(
+            self.url.geturl(),
+            "acme/new-nonce",
+        )
+        response = requests.get(new_nonce_url, timeout=60)
         self.nonce = response.headers["Replay-Nonce"]
 
     def account_request(self, request):
@@ -58,18 +64,23 @@ class Acme:
         add the nonce (see above), url and alg and tada.wav.
         """
         print("Account Request")
+        new_account_url = urllib.parse.urljoin(
+            self.url.geturl(),
+            "acme/new-account",
+        )
         protected = {
             "alg": "ES256",
             "nonce": self.nonce,
-            "url": self.url + "acme/new-account",
+            "url": new_account_url,
             "jwk": self.key.export_public(True),
         }
         token = jwt.JWS(payload=json.dumps(request))
         token.add_signature(self.key, alg="ES256", protected=protected)
         self.debugrequest(protected, request)
         headers = {"Content-Type": "application/jose+json"}
+
         response = requests.post(
-            self.url + "acme/new-account",
+            new_account_url,
             data=token.serialize(),
             headers=headers,
             timeout=60,
@@ -88,10 +99,14 @@ class Acme:
         afterwards.
         """
         print("Order")
+        new_order_url = urllib.parse.urljoin(
+            self.url.geturl(),
+            "acme/new-order",
+        )
         protected = {
             "alg": "ES256",
             "nonce": self.nonce,
-            "url": self.url + "acme/new-order",
+            "url": new_order_url,
             "kid": self.kid,
         }
         self.debugrequest(protected, order)
@@ -99,7 +114,7 @@ class Acme:
         token.add_signature(self.key, alg="ES256", protected=protected)
         headers = {"Content-Type": "application/jose+json"}
         response = requests.post(
-            self.url + "acme/new-order",
+            new_order_url,
             data=token.serialize(),
             headers=headers,
             timeout=60,
@@ -260,7 +275,6 @@ class Acme:
             self.certurl, data=token.serialize(), headers=headers, timeout=60
         )
         self.nonce = response.headers["Replay-Nonce"]
-        # self.debugresponse(response)
         return response.text
 
     def clean_headers(self, headers):

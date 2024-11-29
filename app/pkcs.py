@@ -30,17 +30,17 @@ class pkcs:
     keys = {1: 1, 2: 2, 3: 3, 4: 4}
 
     pkcs11: PyKCS11.PyKCS11Lib
+    _yubikey_pin: str
 
-    def __init__(self, pykcs11lib: PyKCS11.PyKCS11Lib):
+    def __init__(self, pykcs11lib: PyKCS11.PyKCS11Lib, yubikey_pin: str):
         self.pkcs11 = pykcs11lib
+        self._yubikey_pin = yubikey_pin
 
     def getusersession(self, slot):
         print("User Open", slot)
         if slot not in self.sessions:
-            # self.sessions[slot] = self.pkcs11.openSession(slot)
-            # self.sessions[slot].login("123456")
             self.sessions[slot] = self.pkcs11.openSession(slot)
-            self.sessions[slot].login("123456")
+            self.sessions[slot].login(self._yubikey_pin)
         return self.sessions[slot]
 
     def getsession(self, slot):
@@ -172,7 +172,6 @@ class pkcs:
                         "serial_number": "1337",
                         "country_name": "NL",
                         "organization_name": "CIBG",
-                        # "subject_alternative_name": "Testwaarde",
                     }
                 ),
                 "subject_pk_info": {

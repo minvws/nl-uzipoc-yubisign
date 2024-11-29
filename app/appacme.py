@@ -1,5 +1,7 @@
 from .acme import Acme
 
+import urllib.parse
+
 
 class ACME:
     nonce = None
@@ -10,7 +12,7 @@ class ACME:
     challenges = [{}, {}, {}, {}]
     tokens = ["", "", "", ""]
 
-    def __init__(self, url):
+    def __init__(self, url: urllib.parse.ParseResult):
         self.client = Acme(url)
         """
         Get the first nonce.
