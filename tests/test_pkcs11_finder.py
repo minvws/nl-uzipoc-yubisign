@@ -9,11 +9,11 @@ from app.pkcs_lib_finder import PKCS11LibFinder, PyKCS11
     side_effect=PyKCS11.PyKCS11Error("No library found"),
 )
 def test_lib_not_found(load_mock: MagicMock):
-    with pytest.raises(PyKCS11.PyKCS11Error):
-        finder = PKCS11LibFinder()
-        finder.find()
+    finder = PKCS11LibFinder()
+    result = finder.find()
 
     assert load_mock.call_count == 8
+    assert result is None
 
 
 @patch(

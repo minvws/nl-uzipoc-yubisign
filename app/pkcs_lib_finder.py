@@ -22,9 +22,12 @@ class PKCS11LibFinder:
     _WINDOWS_DEFAULT_SYSWOW64_PATH = pathlib.Path("C:\\Windows\\SysWOW64\\ykcs11.dll")
 
     def _load_lib_from_env(self) -> None:
-        # This is being handled internally in the library pointing to the PYKCS11LIB variable
-        lib = PyKCS11.PyKCS11Lib()
-        lib.load()
+        try:
+            # This is being handled internally in the library pointing to the PYKCS11LIB variable
+            lib = PyKCS11.PyKCS11Lib()
+            lib.load()
+        except Exception:
+            return None
 
         return lib
 
@@ -66,6 +69,6 @@ class PKCS11LibFinder:
 
     def find(self) -> PyKCS11.PyKCS11Lib:
         # If no defaults are found, return to PYKCS11LIB environment variable
-        lib = self._try_load_from_default_paths() or self._load_lib_from_env()
+        lib = self._load_lib_from_env() or self._try_load_from_default_paths()
 
         return lib
