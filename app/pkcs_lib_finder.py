@@ -68,7 +68,7 @@ class PKCS11LibFinder:
         return self._try_load_from_paths(defaults)
 
     def find(self) -> PyKCS11.PyKCS11Lib:
-        # If no defaults are found, return to PYKCS11LIB environment variable
+        # If the PYKCS11LIB environment variable is not set, try the default locations
         lib = self._load_lib_from_env() or self._try_load_from_default_paths()
 
         return lib
