@@ -1,6 +1,5 @@
 from unittest.mock import MagicMock, patch
 
-import pytest
 from app.pkcs_lib_finder import PKCS11LibFinder, PyKCS11
 
 
