@@ -1,5 +1,7 @@
 from .acme import Acme
 
+import urllib.parse
+
 
 class ACME:
 	nonce = None
@@ -10,18 +12,16 @@ class ACME:
 	challenges = [{}, {}, {}, {}]
 	tokens = ["", "", "", ""]
 
-	def __init__(self, url):
+	def __init__(self, url: urllib.parse.ParseResult):
+		"""Get the first nonce."""
 		self.client = Acme(url)
-		"""
-        Get the first nonce.
-        """
 		self.client.get_nonce()
 
 		"""
-        Generate a key for the acme instance. This is a key used only for
-        the acme session. No real requirements except not to leak it
-        during (and after) the session.
-        """
+		Generate a key for the acme instance. This is a key used only for
+		the acme session. No real requirements except not to leak it
+		during (and after) the session.
+		"""
 		self.client.gen_key()
 
 		"""

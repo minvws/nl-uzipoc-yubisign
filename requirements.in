@@ -10,3 +10,4 @@ cryptography
 flask
 jwcrypto
 bs4
+python-dotenv==1.0.1
