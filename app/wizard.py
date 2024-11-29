@@ -1,10 +1,10 @@
 import sys
 
 from PyQt6.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QSizePolicy,
-    QWizard,
+	QApplication,
+	QMainWindow,
+	QSizePolicy,
+	QWizard,
 )
 
 from .pkcs import pkcs
@@ -19,36 +19,36 @@ from .page.profit import ProfitPage
 
 
 class MainWindow(QMainWindow, pkcs):
-    def __init__(self, mypkcs, myacme):
-        super().__init__()
-        self.setWindowTitle("YubiKey Wizard")
-        self.resize(1024, 768)
+	def __init__(self, mypkcs, myacme):
+		super().__init__()
+		self.setWindowTitle("YubiKey Wizard")
+		self.resize(1024, 768)
 
-        # Create the wizard
-        self.wizard = QWizard()
-        self.wizard.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
-        self.wizard.addPage(WelcomePage())
-        self.wizard.addPage(SelectYubiKeyPage(mypkcs))
-        self.wizard.addPage(CreateRSAKeysPage(mypkcs))
-        self.wizard.addPage(LoginWithDigiDPage(myacme))
-        self.wizard.addPage(RequestCertificatePage(mypkcs, myacme))
-        self.wizard.addPage(SaveToYubiKeyPage(mypkcs))
-        self.wizard.addPage(ProfitPage())
-        self.wizard.setWindowTitle("YubiKey Wizard")
+		# Create the wizard
+		self.wizard = QWizard()
+		self.wizard.setSizePolicy(
+			QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+		)
+		self.wizard.addPage(WelcomePage())
+		self.wizard.addPage(SelectYubiKeyPage(mypkcs))
+		self.wizard.addPage(CreateRSAKeysPage(mypkcs))
+		self.wizard.addPage(LoginWithDigiDPage(myacme))
+		self.wizard.addPage(RequestCertificatePage(mypkcs, myacme))
+		self.wizard.addPage(SaveToYubiKeyPage(mypkcs))
+		self.wizard.addPage(ProfitPage())
+		self.wizard.setWindowTitle("YubiKey Wizard")
 
-        # Set the wizard as the central widget of the main window
-        self.setCentralWidget(self.wizard)
+		# Set the wizard as the central widget of the main window
+		self.setCentralWidget(self.wizard)
 
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    pkcs = pkcs()
+	app = QApplication(sys.argv)
+	pkcs = pkcs()
 
-    # This expects the new ACME server to run on this port. Later on, make this configurable
-    acme = ACME("http://localhost:8080/")
+	# This expects the new ACME server to run on this port. Later on, make this configurable
+	acme = ACME("http://localhost:8080/")
 
-    mainWindow = MainWindow(pkcs, acme)
-    mainWindow.show()
-    app.exec()
+	mainWindow = MainWindow(pkcs, acme)
+	mainWindow.show()
+	app.exec()
