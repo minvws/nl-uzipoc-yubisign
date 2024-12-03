@@ -14,7 +14,7 @@ Now it is possible to use the certificate on the YubiKey to sign data.
 
 #### Diagram flow
 
-This diagram expecst that the key is already plugged in the user's computer.
+This diagram expects that the Yubikey is already plugged in the user's computer. Next to that, it's expected that the user should use the **DigiD mock** login method.
 
 ```mermaid
 sequenceDiagram
@@ -53,8 +53,7 @@ sequenceDiagram
 
 ### Disclaimer
 
-This Repository is created as a PoC (Proof of Concept) as part of the project _Toekomstbestendig maken UZI_, and
-**should not be used as is in any production environment**.
+This Repository is created as a PoC (Proof of Concept) as part of the project _Toekomstbestendig maken UZI_, and **should not be used as is in any production environment**.
 
 ### Licentie
 
