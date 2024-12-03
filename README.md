@@ -37,16 +37,16 @@ sequenceDiagram
 
     APP->>APP: 4. Per generated key pair, <br> an certificate signing request (CSR)<br> is created and signed by the private key.
 
-    create participant BOULDER_FORK
+    create participant ACME_SERVER
     loop 5. For every certificate signing request (CSR)
-        APP->>BOULDER_FORK: Validate every certificate signing request with the corresponding attestation certificate
-        BOULDER_FORK-->>APP: OK
+        APP->>ACME_SERVER: Validate every certificate signing request with the corresponding attestation certificate
+        ACME_SERVER-->>APP: OK
     end
 
     loop 6. For every key pair
-        APP->>BOULDER_FORK: Request certificate for every key pair, also using the users' JWT
-        BOULDER_FORK-->>APP: OK
-        BOULDER_FORK-->>YUBIKEY: Save certificates
+        APP->>ACME_SERVER: Request certificate for every key pair, also using the users' JWT
+        ACME_SERVER-->>APP: OK
+        ACME_SERVER-->>YUBIKEY: Save certificates
     end
 
 ```
