@@ -1,6 +1,6 @@
-line-length = 88
+line-length = 120
 
 [format]
 docstring-code-format = true
-indent-style = "tab"
+indent-style = "space"
 quote-style = "double"

@@ -15,9 +15,7 @@ class PKCS11LibFinder:
     _LINUX_X86_DEFAULT_PATH = pathlib.Path("/usr/lib/libykcs11.so")
     _LINUX_X64_DEFAULT_PATH = pathlib.Path("/usr/lib64/libykcs11.so")
 
-    _WINDOWS_DEFAULT_LOCATION = pathlib.Path(
-        "C:\\Program Files\\Yubico\\YubiKey PIV Tool\\ykcs11.dll"
-    )
+    _WINDOWS_DEFAULT_LOCATION = pathlib.Path("C:\\Program Files\\Yubico\\YubiKey PIV Tool\\ykcs11.dll")
     _WINDOWS_DEFAULT_SYSTEM32_PATH = pathlib.Path("C:\\Windows\\System32\\ykcs11.dll")
     _WINDOWS_DEFAULT_SYSWOW64_PATH = pathlib.Path("C:\\Windows\\SysWOW64\\ykcs11.dll")
 
@@ -37,9 +35,7 @@ class PKCS11LibFinder:
 
         return lib
 
-    def _try_load_from_paths(
-        self, paths: list[pathlib.Path]
-    ) -> Optional[PyKCS11.PyKCS11Lib]:
+    def _try_load_from_paths(self, paths: list[pathlib.Path]) -> Optional[PyKCS11.PyKCS11Lib]:
         for path in paths:
             try:
                 logger.info(f"Trying to parse libykcs11 library from {path}...")

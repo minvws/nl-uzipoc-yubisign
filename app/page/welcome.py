@@ -2,13 +2,13 @@ from PyQt6.QtWidgets import QWizardPage, QVBoxLayout, QTextBrowser
 
 
 class WelcomePage(QWizardPage):
-	def __init__(self, parent=None):
-		super().__init__(parent)
-		self.setTitle("Welcome")
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setTitle("Welcome")
 
-		layout = QVBoxLayout(self)
+        layout = QVBoxLayout(self)
 
-		htmlContent = """
+        htmlContent = """
         <html>
                 <body style='background: transparent;'>
                  <img src="images/ro-logo.svg" alt="Logo Rijksoverheid">Rijksoverheid
@@ -18,7 +18,7 @@ class WelcomePage(QWizardPage):
         </html>
         """
 
-		htmlView = QTextBrowser()
-		htmlView.setHtml(htmlContent)
-		htmlView.setStyleSheet("background: transparent")
-		layout.addWidget(htmlView)
+        htmlView = QTextBrowser()
+        htmlView.setHtml(htmlContent)
+        htmlView.setStyleSheet("background: transparent")
+        layout.addWidget(htmlView)
