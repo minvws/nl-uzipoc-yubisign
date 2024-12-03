@@ -7,9 +7,6 @@ from urllib.parse import urljoin, urlparse, ParseResult as URLParseResult
 
 class ACMEDirectoryConfigurationParser:
     def _build_conf_from_json(self, json: dict[str, Any]) -> ACMEDirectoryConfiguration:
-        base = urlparse(
-            json["meta"]["website"],
-        )
         new_nonce_url = urlparse(
             json["newNonce"],
         )
@@ -23,7 +20,6 @@ class ACMEDirectoryConfigurationParser:
             json["revokeCert"],
         )
         conf = ACMEDirectoryConfiguration(
-            base_url=base,
             new_nonce_url=new_nonce_url,
             new_order_url=new_order_url,
             new_account_url=new_account_url,

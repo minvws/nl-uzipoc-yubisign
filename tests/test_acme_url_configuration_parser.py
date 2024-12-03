@@ -28,5 +28,5 @@ def test_url_parse(request_get_mock: MagicMock):
         base_url
     )
 
-    assert result.base_url.geturl() == "http://localhost:9090"
+    assert result.new_nonce_url.geturl() == "123"
     request_get_mock.assert_called_with(expected_request_url)
