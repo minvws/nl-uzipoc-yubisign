@@ -4,29 +4,28 @@ After cloning this repository, you can follow this document to set up and run th
 
 ## Requirements
 
-This application requires the `yubico-piv-tool` installed on your computer and therefor the `libykcs11` library. Next to that, make sure you have the following tools:
+This application requires the [`yubico-piv-tool`](https://developers.yubico.com/yubico-piv-tool/) installed on your computer and therefor the `libykcs11` library. Next to that, make sure you have the following tools:
 
 - **`python3.13`**: Make sure the executable is also accessible from your local terminal.
 - **`git`**: To update the application when needed.
 
 ## Installation
 
-### 1.1 Creating and activating an virtual environment
+### 1.1 Creating and activating a virtual environment
 
 To create an isolated environment where we can install the Python requirements in, use the below command to use the `venv` package.
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
+python3.13 -m venv .venv
 ```
 
-For UNIX users, the environment can be activated with the following command.
+For UNIX-based systems, the environment can be activated with the following command.
 
 ```bash
 source .venv/bin/activate
 ```
 
-For Windows users, this is `.\venv\Scripts\activate`.
+For Windows systems, this is `.\venv\Scripts\activate`.
 
 ### 1.2 Installing the requirements
 
@@ -36,24 +35,22 @@ In the root of the project, open up a terminal and run the command underneath.
 pip install -r requirements.txt
 ```
 
-## 1.3 Configuring environment variables
+### 1.3 Configuring environment variables
 
 There are a few environmnent variables which need to be configured via the `.env` file. For this, copy and rename the `.env.example` file and fill in the corresponding values. See the table underneath for the examples.
 
-|         Variable         |                   Default waarde                    | Type  |
+|         Variable         |                    Default value                    | Type  |
 | :----------------------: | :-------------------------------------------------: | :---: |
 |     `ACME_CA_SERVER`     | `"https://acme.proeftuin.uzi-online.rdobeheer.nl/"` | `str` |
 |      `YUBIKEY_PIN`       |                     `"123456"`                      | `str` |
 | `OIDC_PROVIDER_BASE_URL` |    `"https://proeftuin.uzi-online.rdobeheer.nl"`    | `str` |
-
-
 
 ## 2. Starting up the application
 
 In the root of the project and the virtual environment activated, run the command below. Make sure you also have a Yubikey inserted in your computer.
 
 ```bash
-python -m app.wizard
+python3.13 -m app.wizard
 ```
 
 This will start up the application. Then, walk through the following steps:
