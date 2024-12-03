@@ -1,6 +1,6 @@
 # PoC with Yubikey
 
-In order to automate certificate issuance for UZI, a PoC was done with a YubiKey(an hardware token) and an ACME server. The keypairs are generated on the YubiKey and the certificate is issued by the ACME server. This document will give you an high overview.
+In order to automate certificate issuance for UZI, a PoC was done with a YubiKey and an ACME server. The keypairs are generated on the YubiKey and the certificate is issued by the ACME server. This document will give you an high overview.
 
 ### Steps
 
