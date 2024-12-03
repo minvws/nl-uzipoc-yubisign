@@ -29,14 +29,11 @@ class pkcs:
     attests = {}
     keys = {1: 1, 2: 2, 3: 3, 4: 4}
 
+    pkcs11: PyKCS11.PyKCS11Lib
     _yubikey_pin: str
 
-    def __init__(self, yubikey_pin: str):
-        self.pkcs11 = PyKCS11.PyKCS11Lib()
-
-        # TODO make this configurable via environment variable. For every machine, then can be different
-        self.pkcs11.load(self.DEFAULT_HOMEBREW_LOCATION)
-
+    def __init__(self, pykcs11lib: PyKCS11.PyKCS11Lib, yubikey_pin: str):
+        self.pkcs11 = pykcs11lib
         self._yubikey_pin = yubikey_pin
 
     def getusersession(self, slot):
