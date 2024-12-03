@@ -1,12 +1,12 @@
 # PoC with Yubikey
 
-In order to automate certificate issuance for UZI, a PoC was done with a YubiKey(an hardware token) and an ACME server. The keypairs are generated on the YubiKey and the certificate is issued by the ACME server. This document will give you an high overview. For more detailed information, refer to the [nl-uzipoc-yubisign](https://github.com/minvws/nl-uzipoc-yubisign) repository.
+In order to automate certificate issuance for UZI, a PoC was done with a YubiKey(an hardware token) and an ACME server. The keypairs are generated on the YubiKey and the certificate is issued by the ACME server. This document will give you an high overview.
 
 ### Steps
 
 - The YubiKey is reset: all the certificates on the device will be removed.
 - We will generate 4 public and private key pairs on the YubiKey. These are for PIV Authentication, Digital Signature, Key Management and Card Authentication. Next to that, the YubiKey will generate additional attestation certificates, to prove that the private key is generated on the YubiKey itself. The private keys will always remain in the YubiKey.
-- The user logs in via the chosen [authentication flow](./authentication-flow.md). This returns an JWT, containing the user information.
+- The user logs in via the chosen [authentication flow](./AUTH_FLOW.md). This returns an JWT, containing the user information.
 - Per generated key pair, an certificate signing request (CSR) is created and signed by the private key.
 - Finally, each certificate signing request with the corresponding attestation certificate is validated at the ACME server. When this is done, the server will issue an certificate for every key pair. Here, the JWT of the user is also used. This is done with a [fork of letsencrypt-boulder](https://github.com/minvws/letsencrypt-boulder). These are then saved back into the YubiKey into the corresponding slot.
 
