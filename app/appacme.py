@@ -15,7 +15,7 @@ class ACME:
         self,
         directory_config: ACMEDirectoryConfiguration,
     ):
-        self.client = Acme("url", directory_config)
+        self.client = Acme(directory_config)
         """
         Get the first nonce.
         """

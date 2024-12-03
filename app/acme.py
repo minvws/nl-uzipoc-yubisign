@@ -22,10 +22,8 @@ class Acme:
 
     def __init__(
         self,
-        url: urllib.parse.ParseResult,
         directory_config: ACMEDirectoryConfiguration,
     ):
-        self.url = url
         self._directory_configuration = directory_config
 
     def debugrequest(self, protected, payload):
