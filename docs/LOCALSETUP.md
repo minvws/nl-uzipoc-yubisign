@@ -1,60 +1,79 @@
 # Local setup
-After cloning this repository, you can follow this document to set up and run the application. 
+
+After cloning this repository, you can follow this document to set up and run the application.
 
 ## Requirements
-This application requires the `yubico-piv-tool` installed on your computer and therefor the `/usr/lib64/libykcs11.so.2` file. However, this means it currently only works on UNIX based systems. Next to that, make sure you have the following tools:
-- **`python3.13`**: Make sure the executable is also accessible from your local terminal. 
+
+This application requires the [`yubico-piv-tool`](https://developers.yubico.com/yubico-piv-tool/) installed on your computer and therefor the `libykcs11` library. Next to that, make sure you have the following tools:
+
+- **`python3.13`**: Make sure the executable is also accessible from your local terminal.
 - **`git`**: To update the application when needed.
 
 ## Installation
-### 1.1 Creating and activating an virtual environment
+
+### 1.1 Creating and activating a virtual environment
+
 To create an isolated environment where we can install the Python requirements in, use the below command to use the `venv` package.
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
+python3.13 -m venv .venv
 ```
 
-For UNIX users, the environment can be activated with the following command.
+For UNIX-based systems, the environment can be activated with the following command.
+
 ```bash
 source .venv/bin/activate
 ```
 
-For Windows users, this is `.\venv\Scripts\activate`.
+For Windows systems, this is `.\venv\Scripts\activate`.
 
 ### 1.2 Installing the requirements
+
 In the root of the project, open up a terminal and run the command underneath.
 
 ```bash
 pip install -r requirements.txt
 ```
 
+### 1.3 Configuring environment variables
 
+There are a few environmnent variables which need to be configured via the `.env` file. For this, copy and rename the `.env.example` file and fill in the corresponding values. See the table underneath for the examples.
+
+|         Variable         |                    Default value                    | Type  |
+| :----------------------: | :-------------------------------------------------: | :---: |
+|     `ACME_CA_SERVER`     | `"https://acme.proeftuin.uzi-online.rdobeheer.nl/"` | `str` |
+|      `YUBIKEY_PIN`       |                     `"123456"`                      | `str` |
+| `OIDC_PROVIDER_BASE_URL` |    `"https://proeftuin.uzi-online.rdobeheer.nl"`    | `str` |
 
 ## 2. Starting up the application
+
 In the root of the project and the virtual environment activated, run the command below. Make sure you also have a Yubikey inserted in your computer.
 
 ```bash
-python -m app.wizard
+python3.13 -m app.wizard
 ```
 
 This will start up the application. Then, walk through the following steps:
 
 #### 2.1 Open up the application
+
 ![alt text](image.png)
-This will open up the initial screen, press continue. 
+This will open up the initial screen, press continue.
 
 #### 2.2 Selecting the Yubikey
+
 This screen allows you to select a YubiKey. Select yours and click continue.
 ![alt text](image-1.png)
 
 #### 2.3 Logging in
-The next step is to login. In here, select the "Inloggen met DigiD mock" method. 
-![alt text](image-4.png) 
+
+The next step is to login. In here, select the "Inloggen met DigiD mock" method.
+![alt text](image-4.png)
 
 You will then be presented with a mock BSN number. In here, click the "Login / Submit" button. Under the hood, a JWT is now fetched.
 ![alt text](image-5.png)
 
 #### 2.4 Finalizing
-The certificate is now created and saved on the Yubikey. Now, press continue again. The application can now be exited. 
+
+The certificate is now created and saved on the Yubikey. Now, press continue again. The application can now be exited.
 ![alt text](image-6.png)

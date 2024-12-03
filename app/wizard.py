@@ -74,8 +74,6 @@ if __name__ == "__main__":
         getenv("ACME_CA_SERVER", DEFAULT_ACME_CA_SERVER_URL)
     )
     directory_config = ACMEDirectoryConfigurationParser().parse(acme_ca_server_url)
-
-    # pkcsobj = pkcs(yubikey_pin)
     acme = ACME(directory_config)
 
     mainWindow = MainWindow(pkcscls, acme, oidc_provider_url)
