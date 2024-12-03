@@ -8,6 +8,8 @@ from PyQt6.QtWidgets import (
 	QWizard,
 )
 
+from app.pkcs_lib_finder import PKCS11LibFinder
+
 from .pkcs import pkcs
 from .appacme import ACME
 from .page.welcome import WelcomePage
@@ -18,9 +20,8 @@ from .page.requestcert import RequestCertificatePage
 from .page.savetoyubi import SaveToYubiKeyPage
 from .page.profit import ProfitPage
 
-from dotenv import load_dotenv
-
 import urllib.parse
+from dotenv import load_dotenv
 
 DEFAULT_ACME_CA_SERVER_URL = "https://acme.proeftuin.uzi-online.irealisatie.nl"
 DEFAULT_YUBIKEY_PIN = "123456"
@@ -32,6 +33,7 @@ class MainWindow(QMainWindow):
 		self, mypkcs, myacme, oidc_provider_base_url: urllib.parse.ParseResult
 	):
 		super().__init__()
+
 		self.setWindowTitle("YubiKey Wizard")
 		self.resize(1024, 768)
 
@@ -57,18 +59,21 @@ if __name__ == "__main__":
 	load_dotenv()
 	app = QApplication(sys.argv)
 
+	yubikey_pin = getenv(
+		"YUBIKEY_PIN",
+	)
+	# This will search default locations and fall back to the PYKCS11LIB environment variable
+	pkcslib = PKCS11LibFinder().find()
+	pkcscls = pkcs(pykcs11lib=pkcslib, yubikey_pin=yubikey_pin)
+
 	oidc_provider_url = urllib.parse.urlparse(
 		getenv("OIDC_PROVIDER_BASE_URL", DEFAULT_PROEFTUIN_OIDC_LOGIN_URL)
 	)
 	acme_ca_server_url = urllib.parse.urlparse(
 		getenv("ACME_CA_SERVER", DEFAULT_ACME_CA_SERVER_URL)
 	)
-	yubikey_pin = getenv(
-		"YUBIKEY_PIN",
-	)
-	pkcsobj = pkcs(yubikey_pin)
 	acme = ACME(acme_ca_server_url)
 
-	mainWindow = MainWindow(pkcsobj, acme, oidc_provider_url)
+	mainWindow = MainWindow(pkcscls, acme, oidc_provider_url)
 	mainWindow.show()
 	app.exec()
