@@ -23,7 +23,6 @@ class pkcs:
     DEFAULT_LIB_LOCATION = "/usr/lib64/libykcs11.so.2"
     DEFAULT_HOMEBREW_LOCATION = "/opt/homebrew/lib/libykcs11.dylib"
 
-    pkcs11 = None
     sessions = {}
     attest = None
     attests = {}

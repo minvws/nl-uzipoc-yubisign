@@ -15,10 +15,10 @@ class ACME:
 
     def __init__(
         self,
-        url: urllib.parse.ParseResult,
+        # url: urllib.parse.ParseResult,
         directory_config: ACMEDirectoryConfiguration,
     ):
-        self.client = Acme(url, directory_config)
+        self.client = Acme("url", directory_config)
         """
         Get the first nonce.
         """

@@ -59,7 +59,7 @@ class Acme:
         as with all updates, as every request answers with a new nonce.
         """
         response = requests.get(
-            self._directory_configuration.new_nonce_url,
+            self._directory_configuration.new_nonce_url.geturl(),
             timeout=60,
         )
         self.nonce = response.headers["Replay-Nonce"]
@@ -76,7 +76,7 @@ class Acme:
         protected = {
             "alg": "ES256",
             "nonce": self.nonce,
-            "url": self._directory_configuration.new_account_url,
+            "url": self._directory_configuration.new_account_url.geturl(),
             "jwk": self.key.export_public(True),
         }
         token = jwt.JWS(payload=json.dumps(request))
@@ -85,7 +85,7 @@ class Acme:
         headers = {"Content-Type": "application/jose+json"}
 
         response = requests.post(
-            self._directory_configuration.new_account_url,
+            self._directory_configuration.new_account_url.geturl(),
             data=token.serialize(),
             headers=headers,
             timeout=60,
@@ -105,10 +105,12 @@ class Acme:
         """
         print("Order")
 
+        new_order_url = self._directory_configuration.new_order_url.geturl()
+
         protected = {
             "alg": "ES256",
             "nonce": self.nonce,
-            "url": self._directory_configuration.new_order_url,
+            "url": new_order_url,
             "kid": self.kid,
         }
         self.debugrequest(protected, order)
@@ -116,7 +118,7 @@ class Acme:
         token.add_signature(self.key, alg="ES256", protected=protected)
         headers = {"Content-Type": "application/jose+json"}
         response = requests.post(
-            self._directory_configuration.new_order_url,
+            new_order_url,
             data=token.serialize(),
             headers=headers,
             timeout=60,

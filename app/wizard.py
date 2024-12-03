@@ -75,9 +75,9 @@ if __name__ == "__main__":
     )
     directory_config = ACMEDirectoryConfigurationParser().parse(acme_ca_server_url)
 
-    pkcsobj = pkcs(yubikey_pin)
-    acme = ACME(acme_ca_server_url)
+    # pkcsobj = pkcs(yubikey_pin)
+    acme = ACME(directory_config)
 
-    mainWindow = MainWindow(pkcsobj, acme, oidc_provider_url)
+    mainWindow = MainWindow(pkcscls, acme, oidc_provider_url)
     mainWindow.show()
     app.exec()
