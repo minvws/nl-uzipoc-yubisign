@@ -8,7 +8,7 @@ In order to automate certificate issuance for UZI, a PoC was done with a YubiKey
 - We will generate 4 public and private key pairs on the YubiKey. These are for PIV Authentication, Digital Signature, Key Management and Card Authentication. Next to that, the YubiKey will generate additional attestation certificates, to prove that the private key is generated on the YubiKey itself. The private keys will always remain in the YubiKey.
 - The user logs in via the chosen [authentication flow](./AUTH_FLOW.md). This returns an JWT, containing the user information.
 - Per generated key pair, an certificate signing request (CSR) is created and signed by the private key.
-- Finally, each certificate signing request with the corresponding attestation certificate is validated at the ACME server. When this is done, the server will issue an certificate for every key pair. Here, the JWT of the user is also used. This is done with a [fork of letsencrypt-boulder](https://github.com/minvws/letsencrypt-boulder). These are then saved back into the YubiKey into the corresponding slot.
+- Finally, each certificate signing request with the corresponding attestation certificate is validated at the ACME server. When this is done, the server will issue an certificate for every key pair. Here, the JWT of the user is also used. This is done with the ACME server of iRealisatie. These are then saved back into the YubiKey into the corresponding slot.
 
 Now it is possible to use the certificate on the YubiKey to sign data.
 
