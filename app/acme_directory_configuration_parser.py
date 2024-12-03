@@ -30,7 +30,7 @@ class ACMEDirectoryConfigurationParser:
     def parse(self, acme_base_url: URLParseResult) -> ACMEDirectoryConfiguration:
         directory_url = urljoin(
             acme_base_url.geturl(),
-            "/acme/directory",
+            "directory",
         )
         response = requests.get(directory_url)
         json = response.json()

@@ -45,6 +45,8 @@ There are a few environmnent variables which need to be configured via the `.env
 |      `YUBIKEY_PIN`       |                     `"123456"`                      | `str` |
 | `OIDC_PROVIDER_BASE_URL` |    `"https://proeftuin.uzi-online.rdobeheer.nl"`    | `str` |
 
+When setting up the local ACME server developed by iRealisatie, the `ACME_CA_SERVER` variable should be set to **`http://localhost:8080/acme`**. This is due to that the `/directory` endpoint is under the `/acme` path.
+
 ## 2. Starting up the application
 
 In the root of the project and the virtual environment activated, run the command below. Make sure you also have a Yubikey inserted in your computer.
