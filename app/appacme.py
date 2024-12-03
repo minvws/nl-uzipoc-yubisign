@@ -1,3 +1,4 @@
+from app.acme_directory_configuration import ACMEDirectoryConfiguration
 from .acme import Acme
 
 import urllib.parse
@@ -12,8 +13,12 @@ class ACME:
     challenges = [{}, {}, {}, {}]
     tokens = ["", "", "", ""]
 
-    def __init__(self, url: urllib.parse.ParseResult):
-        self.client = Acme(url)
+    def __init__(
+        self,
+        url: urllib.parse.ParseResult,
+        directory_config: ACMEDirectoryConfiguration,
+    ):
+        self.client = Acme(url, directory_config)
         """
         Get the first nonce.
         """

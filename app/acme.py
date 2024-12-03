@@ -6,6 +6,8 @@ from jwcrypto import jwk, jwt
 
 import urllib.parse
 
+from app.acme_directory_configuration import ACMEDirectoryConfiguration
+
 
 class Acme:
     url: urllib.parse.ParseResult
@@ -16,8 +18,15 @@ class Acme:
     certurl = None
     finalize = {}
 
-    def __init__(self, url: urllib.parse.ParseResult):
+    _directory_configuration: ACMEDirectoryConfiguration
+
+    def __init__(
+        self,
+        url: urllib.parse.ParseResult,
+        directory_config: ACMEDirectoryConfiguration,
+    ):
         self.url = url
+        self._directory_configuration = directory_config
 
     def debugrequest(self, protected, payload):
         print("  protected")
@@ -49,11 +58,10 @@ class Acme:
         without having to use the previous nonce. This is stored in self.nonce
         as with all updates, as every request answers with a new nonce.
         """
-        new_nonce_url = urllib.parse.urljoin(
-            self.url.geturl(),
-            "acme/new-nonce",
+        response = requests.get(
+            self._directory_configuration.new_nonce_url,
+            timeout=60,
         )
-        response = requests.get(new_nonce_url, timeout=60)
         self.nonce = response.headers["Replay-Nonce"]
 
     def account_request(self, request):
@@ -64,14 +72,11 @@ class Acme:
         add the nonce (see above), url and alg and tada.wav.
         """
         print("Account Request")
-        new_account_url = urllib.parse.urljoin(
-            self.url.geturl(),
-            "acme/new-account",
-        )
+
         protected = {
             "alg": "ES256",
             "nonce": self.nonce,
-            "url": new_account_url,
+            "url": self._directory_configuration.new_account_url,
             "jwk": self.key.export_public(True),
         }
         token = jwt.JWS(payload=json.dumps(request))
@@ -80,7 +85,7 @@ class Acme:
         headers = {"Content-Type": "application/jose+json"}
 
         response = requests.post(
-            new_account_url,
+            self._directory_configuration.new_account_url,
             data=token.serialize(),
             headers=headers,
             timeout=60,
@@ -99,14 +104,11 @@ class Acme:
         afterwards.
         """
         print("Order")
-        new_order_url = urllib.parse.urljoin(
-            self.url.geturl(),
-            "acme/new-order",
-        )
+
         protected = {
             "alg": "ES256",
             "nonce": self.nonce,
-            "url": new_order_url,
+            "url": self._directory_configuration.new_order_url,
             "kid": self.kid,
         }
         self.debugrequest(protected, order)
@@ -114,7 +116,7 @@ class Acme:
         token.add_signature(self.key, alg="ES256", protected=protected)
         headers = {"Content-Type": "application/jose+json"}
         response = requests.post(
-            new_order_url,
+            self._directory_configuration.new_order_url,
             data=token.serialize(),
             headers=headers,
             timeout=60,

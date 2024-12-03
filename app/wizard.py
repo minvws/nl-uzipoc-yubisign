@@ -8,6 +8,7 @@ from PyQt6.QtWidgets import (
     QWizard,
 )
 
+from app.acme_directory_configuration_parser import ACMEDirectoryConfigurationParser
 from app.pkcs_lib_finder import PKCS11LibFinder
 
 from .pkcs import pkcs
@@ -72,6 +73,7 @@ if __name__ == "__main__":
     acme_ca_server_url = urllib.parse.urlparse(
         getenv("ACME_CA_SERVER", DEFAULT_ACME_CA_SERVER_URL)
     )
+    directory_config = ACMEDirectoryConfigurationParser().parse(acme_ca_server_url)
 
     pkcsobj = pkcs(yubikey_pin)
     acme = ACME(acme_ca_server_url)
