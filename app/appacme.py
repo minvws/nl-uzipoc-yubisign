@@ -1,8 +1,6 @@
 from app.acme_directory_configuration import ACMEDirectoryConfiguration
 from .acme import Acme
 
-import urllib.parse
-
 
 class ACME:
     nonce = None
@@ -15,7 +13,6 @@ class ACME:
 
     def __init__(
         self,
-        # url: urllib.parse.ParseResult,
         directory_config: ACMEDirectoryConfiguration,
     ):
         self.client = Acme("url", directory_config)
