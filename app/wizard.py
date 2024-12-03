@@ -73,9 +73,9 @@ if __name__ == "__main__":
         getenv("ACME_CA_SERVER", DEFAULT_ACME_CA_SERVER_URL)
     )
 
-    pkcsobj = pkcs(yubikey_pin)
+    # pkcsobj = pkcs(yubikey_pin)
     acme = ACME(acme_ca_server_url)
 
-    mainWindow = MainWindow(pkcsobj, acme, oidc_provider_url)
+    mainWindow = MainWindow(pkcscls, acme, oidc_provider_url)
     mainWindow.show()
     app.exec()
