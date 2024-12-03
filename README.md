@@ -49,16 +49,5 @@ Door het laden van de yubikey pkcs11 library in de browser, office, mac os, wind
 worden gebruikt zoals een UZIpas ook gebruikt kan worden. Voor digitaal ondertekenen van documenten, verzoeken en om in te loggen in de browser bij
 partijen die UZI certificaten login mogelijk maken.
 
-## Configureren omgevingsvariabelen
-
-Er zijn een aantal variabelen te configureren via een `.env` bestand. Kopieer en hernoem hiervoor het `.env.example` bestand en vul de desbetreffende waardes in. Zie de tabel hieronder voor de desbetreffende waarden.
-
-|         Variabel         |                  Standaard waarde                   | Type  |
-| :----------------------: | :-------------------------------------------------: | :---: |
-|     `ACME_CA_SERVER`     | `"https://acme.proeftuin.uzi-online.rdobeheer.nl/"` | `str` |
-|      `YUBIKEY_PIN`       |                     `"123456"`                      | `str` |
-| `OIDC_PROVIDER_BASE_URL` |    `"https://proeftuin.uzi-online.rdobeheer.nl"`    | `str` |
-
-Standaard word gebruikt gemaakt de volgende waarden: `"https://acme.proeftuin.uzi-online.rdobeheer.nl/"` voor de CA server en `123456` voor de YubiKey PIN. Dit is te configureren in een `.env` bestand. Kopieer en hernoem hiervoor het `.env.example` bestand en vul de desbetreffende waardes in.
 # Licentie
 Dit project valt onder de [EUPL-1.2 license](./LICENSE.txt).
