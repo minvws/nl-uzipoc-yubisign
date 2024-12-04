@@ -39,13 +39,13 @@ pip install -r requirements.txt
 
 There are a few environmnent variables which need to be configured via the `.env` file. For this, copy and rename the `.env.example` file and fill in the corresponding values. See the table underneath for the examples.
 
-|          Variable           |                        Default value                         | Type  |
-| :-------------------------: | :----------------------------------------------------------: | :---: |
+|          Variable           |                         Default value                          | Type  |
+| :-------------------------: | :------------------------------------------------------------: | :---: |
 | `ACME_SERVER_DIRECTORY_URL` | `"https://acme.proeftuin.uzi-online.irealisatie.nl/directory"` | `str` |
-|        `YUBIKEY_PIN`        |                          `"123456"`                          | `str` |
+|        `YUBIKEY_PIN`        |                           `"123456"`                           | `str` |
 |  `OIDC_PROVIDER_BASE_URL`   |        `"https://proeftuin.uzi-online.irealisatie.nl"`         | `str` |
 
-When setting up the local ACME server developed by iRealisatie, the `ACME_CA_SERVER` variable should be set to **`http://localhost:8080/acme`**. This is due to that the `/directory` endpoint is under the `/acme` path.
+The `ACME_SERVER_DIRECTORY_URL` should be set to the the directory URL of the ACME server. For example, this can be `http://localhost:8080/acme/directory` when working with the local ACME server developed by iRealisatie.
 
 ## 2. Starting up the application
 
