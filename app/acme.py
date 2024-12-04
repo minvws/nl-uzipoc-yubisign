@@ -57,7 +57,7 @@ class Acme:
         as with all updates, as every request answers with a new nonce.
         """
         response = requests.get(
-            self._directory_configuration.new_nonce_url.geturl(),
+            self._directory_configuration.new_nonce_url,
             timeout=60,
         )
         self.nonce = response.headers["Replay-Nonce"]
@@ -74,7 +74,7 @@ class Acme:
         protected = {
             "alg": "ES256",
             "nonce": self.nonce,
-            "url": self._directory_configuration.new_account_url.geturl(),
+            "url": self._directory_configuration.new_account_url,
             "jwk": self.key.export_public(True),
         }
         token = jwt.JWS(payload=json.dumps(request))
@@ -83,7 +83,7 @@ class Acme:
         headers = {"Content-Type": "application/jose+json"}
 
         response = requests.post(
-            self._directory_configuration.new_account_url.geturl(),
+            self._directory_configuration.new_account_url,
             data=token.serialize(),
             headers=headers,
             timeout=60,
@@ -103,7 +103,7 @@ class Acme:
         """
         print("Order")
 
-        new_order_url = self._directory_configuration.new_order_url.geturl()
+        new_order_url = self._directory_configuration.new_order_url
 
         protected = {
             "alg": "ES256",
