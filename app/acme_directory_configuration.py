@@ -5,7 +5,7 @@ from urllib.parse import ParseResult as URLParseResult
 @dataclass
 class ACMEDirectoryConfiguration:
     """
-    This data is generated from the /acme/directory endpoint. These endpoints can be different per server
+    This data is generated from the directory endpoint. These endpoints can be different per server.
     """
 
     new_order_url: URLParseResult
