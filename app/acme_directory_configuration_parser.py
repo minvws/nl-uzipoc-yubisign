@@ -2,7 +2,7 @@ from typing import Any
 import requests
 
 from app.acme_directory_configuration import ACMEDirectoryConfiguration
-from urllib.parse import urljoin, urlparse, ParseResult as URLParseResult
+from urllib.parse import ParseResult as URLParseResult
 
 
 class ACMEDirectoryConfigurationParser:
