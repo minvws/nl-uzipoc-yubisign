@@ -28,11 +28,9 @@ class ACMEDirectoryConfigurationParser:
         return conf
 
     def parse(self, acme_base_url: URLParseResult) -> ACMEDirectoryConfiguration:
-        directory_url = urljoin(
+        response = requests.get(
             acme_base_url.geturl(),
-            "directory",
         )
-        response = requests.get(directory_url)
         json = response.json()
 
         return self._build_conf_from_json(json)

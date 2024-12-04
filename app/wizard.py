@@ -24,7 +24,9 @@ from .page.profit import ProfitPage
 import urllib.parse
 from dotenv import load_dotenv
 
-DEFAULT_ACME_CA_SERVER_URL = "https://acme.proeftuin.uzi-online.irealisatie.nl"
+DEFAULT_ACME_CA_SERVER_URL = (
+    "https://acme.proeftuin.uzi-online.irealisatie.nl/directory"
+)
 DEFAULT_YUBIKEY_PIN = "123456"
 DEFAULT_PROEFTUIN_OIDC_LOGIN_URL = "https://proeftuin.uzi-online.irealisatie.nl"
 
@@ -71,7 +73,7 @@ if __name__ == "__main__":
         getenv("OIDC_PROVIDER_BASE_URL", DEFAULT_PROEFTUIN_OIDC_LOGIN_URL)
     )
     acme_ca_server_url = urllib.parse.urlparse(
-        getenv("ACME_CA_SERVER", DEFAULT_ACME_CA_SERVER_URL)
+        getenv("ACME_SERVER_DIRECTORY_URL", DEFAULT_ACME_CA_SERVER_URL)
     )
     directory_config = ACMEDirectoryConfigurationParser().parse(acme_ca_server_url)
     acme = ACME(directory_config)
