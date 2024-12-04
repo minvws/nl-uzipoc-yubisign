@@ -18,9 +18,9 @@ class ACME:
         self.client.get_nonce()
 
         """
-		Generate a key for the acme instance. This is a key used only for
-		the acme session. No real requirements except not to leak it
-		during (and after) the session.
+        Generate a key for the acme instance. This is a key used only for
+        the acme session. No real requirements except not to leak it
+        during (and after) the session.
 		"""
         self.client.gen_key()
 
