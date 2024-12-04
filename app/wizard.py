@@ -29,9 +29,7 @@ DEFAULT_PROEFTUIN_OIDC_LOGIN_URL = "https://proeftuin.uzi-online.irealisatie.nl"
 
 
 class MainWindow(QMainWindow):
-    def __init__(
-        self, mypkcs, myacme, oidc_provider_base_url: urllib.parse.ParseResult
-    ):
+    def __init__(self, mypkcs, myacme, oidc_provider_base_url: urllib.parse.ParseResult):
         super().__init__()
 
         self.setWindowTitle("YubiKey Wizard")
@@ -39,9 +37,7 @@ class MainWindow(QMainWindow):
 
         # Create the wizard
         self.wizard = QWizard()
-        self.wizard.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
+        self.wizard.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.wizard.addPage(WelcomePage())
         self.wizard.addPage(SelectYubiKeyPage(mypkcs))
         self.wizard.addPage(CreateRSAKeysPage(mypkcs))
@@ -68,12 +64,8 @@ if __name__ == "__main__":
     pkcslib = PKCS11LibFinder().find()
     pkcscls = pkcs(pykcs11lib=pkcslib, yubikey_pin=yubikey_pin)
 
-    oidc_provider_url = urllib.parse.urlparse(
-        getenv("OIDC_PROVIDER_BASE_URL", DEFAULT_PROEFTUIN_OIDC_LOGIN_URL)
-    )
-    acme_ca_server_url = urllib.parse.urlparse(
-        getenv("ACME_CA_SERVER", DEFAULT_ACME_CA_SERVER_URL)
-    )
+    oidc_provider_url = urllib.parse.urlparse(getenv("OIDC_PROVIDER_BASE_URL", DEFAULT_PROEFTUIN_OIDC_LOGIN_URL))
+    acme_ca_server_url = urllib.parse.urlparse(getenv("ACME_CA_SERVER", DEFAULT_ACME_CA_SERVER_URL))
     acme = ACME(acme_ca_server_url)
 
     mainWindow = MainWindow(pkcscls, acme, oidc_provider_url)

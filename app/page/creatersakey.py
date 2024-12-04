@@ -16,9 +16,7 @@ class CreateRSAKeysPage(QWizardPage):
 
         layout = QVBoxLayout(self)
 
-        self.emptyWarningCheckbox = QCheckBox(
-            "I understand that the YubiKey will be emptied"
-        )
+        self.emptyWarningCheckbox = QCheckBox("I understand that the YubiKey will be emptied")
         self.emptyWarningCheckbox.setStyleSheet("color: red")
         self.emptyWarningCheckbox.toggled.connect(self.updateNextButtonStatus)
         layout.addWidget(self.emptyWarningCheckbox)
@@ -76,9 +74,7 @@ class CreateRSAKeysPage(QWizardPage):
                 self.stepsCompleted = True
                 self.completeKeyCreationProcess()
             return
-        self.progressLabel.setText(
-            f"Creating key {self.currentStep} of {self.totalSteps}..."
-        )
+        self.progressLabel.setText(f"Creating key {self.currentStep} of {self.totalSteps}...")
         selectedYubiKeySlot, _, _ = self.wizard().property("selectedYubiKey")
         worker = Worker(self.pkcs, self.currentStep, selectedYubiKeySlot)
         worker.finished.connect(self.finishCurrentStep)
@@ -152,23 +148,14 @@ class CreateRSAKeysPage(QWizardPage):
                     if label == HEADERS[col] + " for " + x and col < 3:
                         finds[col][row] = True
                         break
-                    if (
-                        label == "X.509 Certificate for PIV Attestation" + y
-                        and col == 3
-                    ):
+                    if label == "X.509 Certificate for PIV Attestation" + y and col == 3:
                         finds[col][row] = True
                         break
         self.pkcs.delsession(selectedYubiKeySlot)
         print(finds)
-        return any(
-            value for inner_dict in finds.values() for value in inner_dict.values()
-        )
+        return any(value for inner_dict in finds.values() for value in inner_dict.values())
 
     def updateNextButtonStatus(self):
-        yubiKeyFilled = self.checkIfYubiKeyFilled(
-            self.wizard().property("selectedYubiKey")
-        )
+        yubiKeyFilled = self.checkIfYubiKeyFilled(self.wizard().property("selectedYubiKey"))
         checkboxChecked = self.emptyWarningCheckbox.isChecked()
-        self.wizard().button(QWizard.WizardButton.NextButton).setEnabled(
-            not yubiKeyFilled or checkboxChecked
-        )
+        self.wizard().button(QWizard.WizardButton.NextButton).setEnabled(not yubiKeyFilled or checkboxChecked)

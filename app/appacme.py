@@ -13,10 +13,8 @@ class ACME:
     tokens = ["", "", "", ""]
 
     def __init__(self, url: urllib.parse.ParseResult):
+        """Get the first nonce."""
         self.client = Acme(url)
-        """
-        Get the first nonce.
-        """
         self.client.get_nonce()
 
         """

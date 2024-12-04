@@ -74,9 +74,7 @@ class pkcs:
 
     def listattest(self, slot):
         session = self.getsession(slot)
-        all_objects = session.findObjects(
-            [(PyKCS11.CKA_CLASS, PyKCS11.CKO_CERTIFICATE)]
-        )
+        all_objects = session.findObjects([(PyKCS11.CKA_CLASS, PyKCS11.CKO_CERTIFICATE)])
         for obj in all_objects:
             label = session.getAttributeValue(obj, [PyKCS11.CKA_LABEL])[0]
             value = session.getAttributeValue(obj, [PyKCS11.CKA_VALUE])[0]
@@ -111,9 +109,7 @@ class pkcs:
 
     def listprivatekeys(self, slot):
         session = self.getsession(slot)
-        all_objects = session.findObjects(
-            [(PyKCS11.CKA_CLASS, PyKCS11.CKO_PRIVATE_KEY)]
-        )
+        all_objects = session.findObjects([(PyKCS11.CKA_CLASS, PyKCS11.CKO_PRIVATE_KEY)])
         print(all_objects)
         self.delsession(slot)
 
@@ -181,15 +177,9 @@ class pkcs:
                     },
                     "public_key": RSAPublicKey(
                         {
-                            "modulus": int.from_bytes(
-                                session.getAttributeValue(
-                                    public_key, [PyKCS11.CKA_MODULUS]
-                                )[0]
-                            ),
+                            "modulus": int.from_bytes(session.getAttributeValue(public_key, [PyKCS11.CKA_MODULUS])[0]),
                             "public_exponent": int.from_bytes(
-                                session.getAttributeValue(
-                                    public_key, [PyKCS11.CKA_PUBLIC_EXPONENT]
-                                )[0]
+                                session.getAttributeValue(public_key, [PyKCS11.CKA_PUBLIC_EXPONENT])[0]
                             ),
                         }
                     ),
@@ -219,12 +209,8 @@ class pkcs:
     def getcsr(self, slot, keyid):
         csr = None
         session = self.getusersession(slot)
-        privkey = session.findObjects(
-            [(PyKCS11.CKA_CLASS, PyKCS11.CKO_PRIVATE_KEY), (PyKCS11.CKA_ID, [keyid])]
-        )
-        pubkey = session.findObjects(
-            [(PyKCS11.CKA_CLASS, PyKCS11.CKO_PUBLIC_KEY), (PyKCS11.CKA_ID, [keyid])]
-        )
+        privkey = session.findObjects([(PyKCS11.CKA_CLASS, PyKCS11.CKO_PRIVATE_KEY), (PyKCS11.CKA_ID, [keyid])])
+        pubkey = session.findObjects([(PyKCS11.CKA_CLASS, PyKCS11.CKO_PUBLIC_KEY), (PyKCS11.CKA_ID, [keyid])])
         if privkey and pubkey:
             privkey = privkey[0]
             pubkey = pubkey[0]
