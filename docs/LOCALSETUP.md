@@ -32,7 +32,7 @@ For Windows systems, this is `.\venv\Scripts\activate`.
 In the root of the project, open up a terminal and run the command underneath.
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.in
 ```
 
 ### 1.3 Configuring environment variables
