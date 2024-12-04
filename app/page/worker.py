@@ -15,7 +15,7 @@ class Worker(QObject):
     def task(self):
         try:
             print("** Worker", self.currentStep)
-            # keysize of 4096 is not supported, for more info: 
+            # keysize of 4096 is not supported, for more info:
             # https://github.com/Yubico/yubico-piv-tool/issues/58
             public_template = [
                 (PyKCS11.CKA_CLASS, PyKCS11.CKO_PUBLIC_KEY),
@@ -35,12 +35,10 @@ class Worker(QObject):
                 (PyKCS11.CKA_ID, [self.currentStep]),
             ]
             session = self.pkcs.getadminsession(self.selectedYubiKeySlot)
-            print(
-                "** Output", session.generateKeyPair(public_template, private_template)
-            )
+            print("** Output", session.generateKeyPair(public_template, private_template))
             self.pkcs.delsession(self.selectedYubiKeySlot)
             # print("done")
-        except:
+        except Exception:
             print("Bla")
         finally:
             print("** Worker done", self.currentStep)
