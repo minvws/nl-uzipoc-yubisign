@@ -35,9 +35,7 @@ class LoginWithDigiDPage(QWizardPage):
         self._oidc_provider_base_url = oidc_provider_base_url
 
     def _get_jwt_url(self):
-        return urllib.parse.urljoin(
-            self._oidc_provider_base_url.geturl(), "ziekenboeg/users/jwt"
-        )
+        return urllib.parse.urljoin(self._oidc_provider_base_url.geturl(), "ziekenboeg/users/jwt")
 
     def initializePage(self):
         layout = QVBoxLayout(self)
@@ -56,15 +54,11 @@ class LoginWithDigiDPage(QWizardPage):
             self.acme.order(keynum)
             self.acme.getchallenge(keynum - 1)
 
-        login_url = urllib.parse.urljoin(
-            self._oidc_provider_base_url.geturl(), "oidc/login"
-        )
+        login_url = urllib.parse.urljoin(self._oidc_provider_base_url.geturl(), "oidc/login")
         url = QUrl(login_url)
 
         query = QUrlQuery()
-        query.addQueryItem(
-            "acme_tokens", ",".join(self.acme.tokens)
-        )  # Replace with your parameter name and value
+        query.addQueryItem("acme_tokens", ",".join(self.acme.tokens))  # Replace with your parameter name and value
         url.setQuery(query)
         self.browser.load(url)
 
@@ -81,9 +75,7 @@ class LoginWithDigiDPage(QWizardPage):
     def onUrlChanged(self, url):
         print(url.toString())
 
-        user_home_url = urllib.parse.urljoin(
-            self._oidc_provider_base_url.geturl(), "ziekenboeg/users/home"
-        )
+        user_home_url = urllib.parse.urljoin(self._oidc_provider_base_url.geturl(), "ziekenboeg/users/home")
         if url.toString() == user_home_url:
             self.browser.load(QUrl(self._get_jwt_url()))
 

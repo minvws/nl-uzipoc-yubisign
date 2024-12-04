@@ -45,9 +45,7 @@ class Acme:
         This does only generate a P-256 key for use with JWT.
         This key is only used during the session to request a certificate from ACME.
         """
-        self.key = jwk.JWK.generate(
-            kty="EC", crv="P-256", key_ops=["verify", "sign"], alg="ES256"
-        )
+        self.key = jwk.JWK.generate(kty="EC", crv="P-256", key_ops=["verify", "sign"], alg="ES256")
 
     def get_nonce(self):
         """
@@ -154,9 +152,7 @@ class Acme:
         # This will return a random token, with the status of pending.
         #
         # Later on, these tokens from the challenges should be contained in the users' JWT.
-        response = requests.post(
-            challengeurl, data=token.serialize(), headers=headers, timeout=60
-        )
+        response = requests.post(challengeurl, data=token.serialize(), headers=headers, timeout=60)
         returned_json = response.json()
 
         self.debugresponse(response)
@@ -192,9 +188,7 @@ class Acme:
         }
         print("  headers")
         print(headers)
-        response = requests.post(
-            challengeurl, data=token.serialize(), headers=headers, timeout=60
-        )
+        response = requests.post(challengeurl, data=token.serialize(), headers=headers, timeout=60)
         self.nonce = response.headers["Replay-Nonce"]
         self.debugresponse(response)
 
@@ -216,9 +210,7 @@ class Acme:
         token = jwt.JWS(payload=json.dumps({}))
         token.add_signature(self.key, alg="ES256", protected=protected)
         headers = {"Content-Type": "application/jose+json"}
-        response = requests.post(
-            notifyurl, data=token.serialize(), headers=headers, timeout=60
-        )
+        response = requests.post(notifyurl, data=token.serialize(), headers=headers, timeout=60)
         self.nonce = response.headers["Replay-Nonce"]
         self.debugresponse(response)
         assert response.json()["status"] in ["pending", "valid"]
@@ -249,9 +241,7 @@ class Acme:
         }
 
         # This calls the finalize method, preparing the certificate
-        response = requests.post(
-            self.finalize[keynum], data=token.serialize(), headers=headers, timeout=60
-        )
+        response = requests.post(self.finalize[keynum], data=token.serialize(), headers=headers, timeout=60)
         self.nonce = response.headers["Replay-Nonce"]
         self.debugresponse(response)
         assert response.json()["status"] == "valid"
@@ -273,9 +263,7 @@ class Acme:
         token = jwt.JWS(payload="")
         token.add_signature(self.key, alg="ES256", protected=protected)
         headers = {"Content-Type": "application/jose+json"}
-        response = requests.post(
-            self.certurl, data=token.serialize(), headers=headers, timeout=60
-        )
+        response = requests.post(self.certurl, data=token.serialize(), headers=headers, timeout=60)
         self.nonce = response.headers["Replay-Nonce"]
         return response.text
 
@@ -318,6 +306,4 @@ class Acme:
         """
         A simple hack to learn pprint to add some spaces upfront. Better for viewing
         """
-        print(
-            "\n".join(["    " + x for x in pprint.pformat(data, width=80).splitlines()])
-        )
+        print("\n".join(["    " + x for x in pprint.pformat(data, width=80).splitlines()]))

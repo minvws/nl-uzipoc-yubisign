@@ -28,7 +28,7 @@ class SelectYubiKeyPage(QWizardPage):
             try:
                 info = self.pkcs.pkcs11.getTokenInfo(slot)
                 yubikeys += [(info.model, info.serialNumber, info.label, slot)]
-            except:
+            except Exception:
                 pass
 
         for name, serial, available, slot in yubikeys:
@@ -45,9 +45,7 @@ class SelectYubiKeyPage(QWizardPage):
     def yubiKeySelected(self, current, _previous):
         if current is not None:
             # Assuming the YubiKeyItemWidget has a method or property to get the YubiKey details
-            self.selectedYubiKey = self.yubikeyListWidget.itemWidget(
-                current
-            ).getYubiKeyDetails()
+            self.selectedYubiKey = self.yubikeyListWidget.itemWidget(current).getYubiKeyDetails()
             self.wizard().button(QWizard.WizardButton.NextButton).setEnabled(True)
 
     def nextId(self):
