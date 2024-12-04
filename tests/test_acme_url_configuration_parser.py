@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 from app.acme_directory_configuration import ACMEDirectoryConfiguration
 from app.acme_directory_configuration_parser import ACMEDirectoryConfigurationParser
 
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 
 
 @patch(
