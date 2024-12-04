@@ -18,7 +18,6 @@ from .page.logindigid import LoginWithDigiDPage
 from .page.creatersakey import CreateRSAKeysPage
 from .page.requestcert import RequestCertificatePage
 from .page.savetoyubi import SaveToYubiKeyPage
-from .page.profit import ProfitPage
 
 import urllib.parse
 from dotenv import load_dotenv
