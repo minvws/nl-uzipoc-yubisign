@@ -48,8 +48,10 @@ class MainWindow(QMainWindow):
         self.wizard.addPage(LoginWithDigiDPage(myacme, oidc_provider_base_url))
         self.wizard.addPage(RequestCertificatePage(mypkcs, myacme))
         self.wizard.addPage(SaveToYubiKeyPage(mypkcs))
-        self.wizard.addPage(ProfitPage())
         self.wizard.setWindowTitle("YubiKey Wizard")
+
+        # When the wizard has finished, close the application
+        self.wizard.finished.connect(QApplication.instance().quit)
 
         # Set the wizard as the central widget of the main window
         self.setCentralWidget(self.wizard)
