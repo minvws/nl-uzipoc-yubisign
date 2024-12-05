@@ -10,7 +10,6 @@ from .yubikeyitem import YubiKeyItemWidget
 
 
 class SelectYubiKeyPage(QWizardPage):
-    selected_key: Optional[Any]
     key_list_widget: QListWidget
 
     def _get_yubikeys(self):
@@ -41,7 +40,6 @@ class SelectYubiKeyPage(QWizardPage):
         super().__init__(parent)
         self.setTitle("Selecteer de te gebruiken yubikey")
 
-        self.selected_key = None
         self.pkcs = mypkcs
         yubikeys = self._get_yubikeys()
         yubikey_list_widget = self._build_yubikey_list_widget(yubikeys)
@@ -67,22 +65,26 @@ class SelectYubiKeyPage(QWizardPage):
         return widget
 
     def on_yubikey_item_change(self):
-        selection = self._find_selected_widget_item()
-
-        # Update the details based on if we can find a key
-        self.selected_key = selection.getYubiKeyDetails() if selection else None
-
         # The next button does not have to be enabled manually, just trigger the completion signal.
         # This will re-check the isCompleted function
         # https://doc.qt.io/qt-6/qwizardpage.html#completeChanged
         self.completeChanged.emit()
 
     def isComplete(self) -> bool:
-        return self.selected_key is not None
+        return self._find_selected_widget_item() is not None
 
     def nextId(self):
+        widget = self._find_selected_widget_item()
+
+        # This should and can not happen, since we're disabling the button
+        if not widget:
+            return super().nextId()
+
         # Store the selected YubiKey information in the wizard
-        self.wizard().setProperty("selectedYubiKey", self.selected_key)
+        self.wizard().setProperty(
+            "selectedYubiKey",
+            widget.getYubiKeyDetails(),
+        )
         return super().nextId()
 
     def initializePage(self) -> None:
@@ -90,9 +92,5 @@ class SelectYubiKeyPage(QWizardPage):
 
         self.key_list_widget.itemSelectionChanged.connect(self.on_yubikey_item_change)
 
-    def deselect_all(self):
-        self.key_list_widget.clearSelection()
-        self.selected_key = None
-
     def cleanupPage(self) -> None:
-        self.deselect_all()
+        self.key_list_widget.clearSelection()
