@@ -26,7 +26,6 @@ class SelectYubiKeyPage(QWizardPage):
 
     def _build_yubikey_list_widget(self, yubikeys: list[Any]) -> QListWidget:
         widget = QListWidget()
-        # widget.setSelectionMode(QListWidget.SelectionMode.NoSelection)
 
         for name, serial, available, slot in yubikeys:
             itemWidget = YubiKeyItemWidget(name, serial, available, slot)
@@ -42,41 +41,45 @@ class SelectYubiKeyPage(QWizardPage):
         super().__init__(parent)
         self.setTitle("Selecteer de te gebruiken yubikey")
 
-        layout = QVBoxLayout(self)
-
         self.selectedYubiKey = None
         self.pkcs = mypkcs
-
         yubikeys = self._get_yubikeys()
-
         yubikey_list_widget = self._build_yubikey_list_widget(yubikeys)
+
+        layout = QVBoxLayout(self)
         layout.addWidget(yubikey_list_widget)
 
         # Save it for later reference (can this be done better?)
         self.yubikeyListWidget = yubikey_list_widget
 
-        # yubikey_list_widget.currentItemChanged.connect(self.on_yubikey_row_change)
+    def _find_selected_widget_item(self) -> Optional[YubiKeyItemWidget]:
+        selected_indexes = self.yubikeyListWidget.selectedIndexes()
 
-        # # yubikey_list_widget.currentRowChanged.connect(self.yubiKeySelected)
-        # yubikey_list_widget.itemClicked.connect(self.on_yubikey_row_click)
+        if selected_indexes == []:
+            return None
 
-    def on_yubikey_row_click(self, item: QListWidgetItem):
-        # TODO check here for current selection??? otherwise do nothing
-        # TODO de-select the yubikey on page exit
-        if item is not None:
-            # Assuming the YubiKeyItemWidget has a method or property to get the YubiKey details
-            self.selectedYubiKey = self.yubikeyListWidget.itemWidget(item).getYubiKeyDetails()
+        # Only one should be selected
+        first_row = selected_indexes[0].row()
+        selected_item = self.yubikeyListWidget.item(first_row)
 
-            # The next button does not have to be enabled manually, just trigger the completion signal.
-            # This will re-check the isCompleted function
-            # https://doc.qt.io/qt-6/qwizardpage.html#completeChanged
-            self.completeChanged.emit()
+        # Get the widget associated to the selected item
+        widget = self.yubikeyListWidget.itemWidget(selected_item)
 
-    def on_yubikey_row_change(self, current: QListWidgetItem, previous: Optional[QListWidgetItem]):
-        # TODO check here for current selection??? otherwise select other one
-        item_in_list = self.yubikeyListWidget.itemWidget(current)
+        return widget
 
-        print(1)
+    def on_yubikey_item_change(self):
+        selection = self._find_selected_widget_item()
+
+        if not selection:
+            return
+
+        # Update the details
+        self.selectedYubiKey = selection.getYubiKeyDetails()
+
+        # The next button does not have to be enabled manually, just trigger the completion signal.
+        # This will re-check the isCompleted function
+        # https://doc.qt.io/qt-6/qwizardpage.html#completeChanged
+        self.completeChanged.emit()
 
     def isComplete(self) -> bool:
         return self.selectedYubiKey is not None
@@ -89,9 +92,4 @@ class SelectYubiKeyPage(QWizardPage):
     def initializePage(self) -> None:
         super().initializePage()
 
-        self.yubikeyListWidget.clearSelection()
-
-        self.yubikeyListWidget.currentItemChanged.connect(self.on_yubikey_row_change)
-
-        # yubikey_list_widget.currentRowChanged.connect(self.yubiKeySelected)
-        self.yubikeyListWidget.itemClicked.connect(self.on_yubikey_row_click)
+        self.yubikeyListWidget.itemSelectionChanged.connect(self.on_yubikey_item_change)
