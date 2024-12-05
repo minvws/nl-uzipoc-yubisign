@@ -4,11 +4,7 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QListWidget,
     QListWidgetItem,
-    QLineEdit,
-    QLabel,
-    QHBoxLayout,
 )
-from PyQt6.QtGui import QFont
 
 from app.page.yubipin_widget import YubiPinWidget
 
@@ -17,7 +13,7 @@ from .yubikeyitem import YubiKeyItemWidget
 
 class SelectYubiKeyPage(QWizardPage):
     key_list_widget: QListWidget
-    _pin_input_widget: QLineEdit
+    _pin_input_widget: YubiPinWidget
 
     def _prevent_backbutton_clicks(self):
         self.setCommitPage(True)
@@ -46,19 +42,6 @@ class SelectYubiKeyPage(QWizardPage):
 
         return widget
 
-    def _build_yubipin_widget(self) -> QVBoxLayout:
-        layout = QHBoxLayout()
-
-        label = QLabel("YubiKey PIN")
-        label.setFont(QFont("Arial", 14, QFont.Weight.Bold))
-        layout.addWidget(label)
-
-        pin_input = QLineEdit()
-        pin_input.setEchoMode(QLineEdit.EchoMode.Password)
-        layout.addWidget(pin_input)
-
-        return layout
-
     def __init__(self, mypkcs, parent=None):
         super().__init__(parent)
         self.setTitle("Selecteer de te gebruiken yubikey")
@@ -78,6 +61,7 @@ class SelectYubiKeyPage(QWizardPage):
 
         # yubipin_widget.
         self.key_list_widget = yubikey_list_widget
+        self._pin_input_widget = yubipin_widget
 
     def _find_selected_widget_item(self) -> Optional[YubiKeyItemWidget]:
         selected_indexes = self.key_list_widget.selectedIndexes()
@@ -95,14 +79,19 @@ class SelectYubiKeyPage(QWizardPage):
         return widget
 
     def on_yubikey_item_change(self):
+        self._pin_input_widget.toggle_input_field_ability(on=self.has_selection())
+
         # The next button does not have to be enabled manually, just trigger the completion signal.
         # This will re-check the isCompleted function
         # https://doc.qt.io/qt-6/qwizardpage.html#completeChanged
         self.completeChanged.emit()
 
+    def has_selection(self) -> bool:
+        return self._find_selected_widget_item() is not None
+
     def isComplete(self) -> bool:
         # TODO this should also include if the PIN has been filled in and succesful
-        return self._find_selected_widget_item() is not None
+        return self.has_selection()
 
     def nextId(self):
         widget = self._find_selected_widget_item()
