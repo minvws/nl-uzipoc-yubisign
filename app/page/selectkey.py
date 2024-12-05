@@ -10,8 +10,8 @@ from .yubikeyitem import YubiKeyItemWidget
 
 
 class SelectYubiKeyPage(QWizardPage):
-    selectedYubiKey: Optional[Any]
-    yubikeyListWidget: QListWidget
+    selected_key: Optional[Any]
+    key_list_widget: QListWidget
 
     def _get_yubikeys(self):
         keys = []
@@ -41,7 +41,7 @@ class SelectYubiKeyPage(QWizardPage):
         super().__init__(parent)
         self.setTitle("Selecteer de te gebruiken yubikey")
 
-        self.selectedYubiKey = None
+        self.selected_key = None
         self.pkcs = mypkcs
         yubikeys = self._get_yubikeys()
         yubikey_list_widget = self._build_yubikey_list_widget(yubikeys)
@@ -50,20 +50,20 @@ class SelectYubiKeyPage(QWizardPage):
         layout.addWidget(yubikey_list_widget)
 
         # Save it for later reference (can this be done better?)
-        self.yubikeyListWidget = yubikey_list_widget
+        self.key_list_widget = yubikey_list_widget
 
     def _find_selected_widget_item(self) -> Optional[YubiKeyItemWidget]:
-        selected_indexes = self.yubikeyListWidget.selectedIndexes()
+        selected_indexes = self.key_list_widget.selectedIndexes()
 
         if selected_indexes == []:
             return None
 
         # Only one should be selected
         first_row = selected_indexes[0].row()
-        selected_item = self.yubikeyListWidget.item(first_row)
+        selected_item = self.key_list_widget.item(first_row)
 
         # Get the widget associated to the selected item
-        widget = self.yubikeyListWidget.itemWidget(selected_item)
+        widget = self.key_list_widget.itemWidget(selected_item)
 
         return widget
 
@@ -74,7 +74,7 @@ class SelectYubiKeyPage(QWizardPage):
             return
 
         # Update the details
-        self.selectedYubiKey = selection.getYubiKeyDetails()
+        self.selected_key = selection.getYubiKeyDetails()
 
         # The next button does not have to be enabled manually, just trigger the completion signal.
         # This will re-check the isCompleted function
@@ -82,14 +82,14 @@ class SelectYubiKeyPage(QWizardPage):
         self.completeChanged.emit()
 
     def isComplete(self) -> bool:
-        return self.selectedYubiKey is not None
+        return self.selected_key is not None
 
     def nextId(self):
         # Store the selected YubiKey information in the wizard
-        self.wizard().setProperty("selectedYubiKey", self.selectedYubiKey)
+        self.wizard().setProperty("selectedYubiKey", self.selected_key)
         return super().nextId()
 
     def initializePage(self) -> None:
         super().initializePage()
 
-        self.yubikeyListWidget.itemSelectionChanged.connect(self.on_yubikey_item_change)
+        self.key_list_widget.itemSelectionChanged.connect(self.on_yubikey_item_change)
