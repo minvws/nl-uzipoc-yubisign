@@ -10,6 +10,11 @@ from .yubikeyitem import YubiKeyItemWidget
 
 
 class SelectYubiKeyPage(QWizardPage):
+    def _prevent_backbutton_clicks(self):
+        # Make sure the user can't navigate back after this step
+        # https://doc.qt.io/qt-5/qwizardpage.html#setCommitPage
+        self.setCommitPage(True)
+
     def __init__(self, mypkcs, parent=None):
         super().__init__(parent)
         self.setTitle("Selecteer de te gebruiken yubikey")
@@ -38,8 +43,9 @@ class SelectYubiKeyPage(QWizardPage):
             self.yubikeyListWidget.setItemWidget(item, itemWidget)
             item.setSizeHint(itemWidget.sizeHint())
 
-        layout.addWidget(self.yubikeyListWidget)
+        self._prevent_backbutton_clicks()
 
+        layout.addWidget(self.yubikeyListWidget)
         self.yubikeyListWidget.currentItemChanged.connect(self.enableNextButton)
 
     def yubiKeySelected(self, current, _previous):
