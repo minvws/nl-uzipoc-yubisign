@@ -9,6 +9,5 @@ class SaveToYubiKeyPage(QWizardPage):
     def initializePage(self):
         self.setTitle("Save to YubiKey")
         layout = QVBoxLayout(self)
-        # Placeholder for YubiKey saving logic
-        label = QLabel("Save Keys and Certificate to YubiKey (already done)")
+        label = QLabel("Keys and certificates have been saved to the YubiKey. Process completed.")
         layout.addWidget(label)
