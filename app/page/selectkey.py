@@ -12,6 +12,9 @@ from .yubikeyitem import YubiKeyItemWidget
 class SelectYubiKeyPage(QWizardPage):
     key_list_widget: QListWidget
 
+    def _prevent_backbutton_clicks(self):
+        self.setCommitPage(True)
+
     def _get_yubikeys(self):
         keys = []
         for slot in self.pkcs.pkcs11.getSlotList():
@@ -39,6 +42,7 @@ class SelectYubiKeyPage(QWizardPage):
     def __init__(self, mypkcs, parent=None):
         super().__init__(parent)
         self.setTitle("Selecteer de te gebruiken yubikey")
+        self._prevent_backbutton_clicks()
 
         self.pkcs = mypkcs
         yubikeys = self._get_yubikeys()
