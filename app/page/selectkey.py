@@ -73,7 +73,7 @@ class SelectYubiKeyPage(QWizardPage):
 
         # TODO add PIN-code input (password)
         # Add use default button?
-        yubipin_widget = YubiPinWidget(None, None)
+        yubipin_widget = YubiPinWidget()
         layout.addWidget(yubipin_widget)
 
         # yubipin_widget.
