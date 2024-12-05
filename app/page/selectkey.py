@@ -49,7 +49,6 @@ class SelectYubiKeyPage(QWizardPage):
         layout = QVBoxLayout(self)
         layout.addWidget(yubikey_list_widget)
 
-        # Save it for later reference (can this be done better?)
         self.key_list_widget = yubikey_list_widget
 
     def _find_selected_widget_item(self) -> Optional[YubiKeyItemWidget]:
@@ -70,11 +69,8 @@ class SelectYubiKeyPage(QWizardPage):
     def on_yubikey_item_change(self):
         selection = self._find_selected_widget_item()
 
-        if not selection:
-            return
-
-        # Update the details
-        self.selected_key = selection.getYubiKeyDetails()
+        # Update the details based on if we can find a key
+        self.selected_key = selection.getYubiKeyDetails() if selection else None
 
         # The next button does not have to be enabled manually, just trigger the completion signal.
         # This will re-check the isCompleted function
@@ -93,3 +89,10 @@ class SelectYubiKeyPage(QWizardPage):
         super().initializePage()
 
         self.key_list_widget.itemSelectionChanged.connect(self.on_yubikey_item_change)
+
+    def deselect_all(self):
+        self.key_list_widget.clearSelection()
+        self.selected_key = None
+
+    def cleanupPage(self) -> None:
+        self.deselect_all()
