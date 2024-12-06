@@ -9,6 +9,8 @@ This application requires the [`yubico-piv-tool`](https://developers.yubico.com/
 - **`python3.13`**: Make sure the executable is also accessible from your local terminal.
 - **`git`**: To update the application when needed.
 
+For Windows users, the PIV tool can be installed via [this link](https://developers.yubico.com/yubico-piv-tool/Releases/).
+
 ## Installation
 
 ### 1.1 Creating and activating a virtual environment
