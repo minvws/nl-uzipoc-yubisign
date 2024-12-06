@@ -103,7 +103,10 @@ class YubiPinWidget(QWidget):
         if not self._selected_yubikey:
             return
 
-        ok: bool = YubikeyPINAuthenticator().login(self.get_value())
+        ok: bool = YubikeyPINAuthenticator(self._pykcs_lib).login(
+            self._selected_yubikey,
+            self.get_value(),
+        )
 
         if not ok:
             self._notify_pin_incorrect()

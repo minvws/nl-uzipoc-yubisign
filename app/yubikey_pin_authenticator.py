@@ -16,14 +16,14 @@ class YubikeyPINAuthenticator:
         if not key:
             return False
 
-        if not self._selected_yubikey_slot_available():
+        if not self._selected_yubikey_slot_available(key):
             return False
 
         return True
 
-    def _is_pin_valid_to_yubikey(self, pin: str) -> bool:
+    def _is_pin_valid_to_yubikey(self, slot: str, pin: str) -> bool:
         try:
-            session = self._pykcs11lib.openSession(self._selected_yubikey.slot)
+            session = self._pykcs11lib.openSession(slot)
 
             # This will throw an exception if the pin is incorrect
             session.login(pin)
@@ -36,4 +36,4 @@ class YubikeyPINAuthenticator:
         if not self._key_available(key):
             return False
 
-        return self._is_pin_valid_to_yubikey(pin)
+        return self._is_pin_valid_to_yubikey(key.slot, pin)
