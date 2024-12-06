@@ -15,7 +15,11 @@ from app.pkcs import pkcs as InternalPKCSWrapper
 
 
 class SelectYubiKeyPage(QWizardPage):
-    _TITLE = "Selecteer de te gebruiken Yubikey en vul de PIN-code in"
+    _TITLE = "Selectie en authenticatie Yubikey"
+    _SUBTITLE = """
+        Selecteer de desbetreffende Yubikey en vul vervolgens hiervan de PIN-code in.
+        Let op: wanneer je te vaak een foute PIN-code ingeeft word de key geblokkeerd en moet deze handmatig worden gereset.
+    """
 
     pkcs: InternalPKCSWrapper
     key_list_widget: QListWidget
@@ -52,25 +56,32 @@ class SelectYubiKeyPage(QWizardPage):
 
         return widget
 
-    def __init__(self, mypkcs: InternalPKCSWrapper, parent=None):
-        super().__init__(parent)
+    def _setup_ui(self, pkcslib: InternalPKCSWrapper):
         self.setTitle(self._TITLE)
+        self.setSubTitle(self._SUBTITLE)
+
         self._prevent_backbutton_clicks()
 
-        self.pkcs = mypkcs
         yubikeys = self._get_yubikeys()
         yubikey_list_widget = self._build_yubikey_list_widget(yubikeys)
 
         layout = QVBoxLayout(self)
         layout.addWidget(yubikey_list_widget)
 
-        yubipin_widget = YubiPinWidget(mypkcs.pkcs11, self._pin_authenticated_signal)
+        yubipin_widget = YubiPinWidget(pkcslib.pkcs11, self._pin_authenticated_signal)
         layout.addWidget(yubipin_widget)
 
         # yubipin_widget.
         self.key_list_widget = yubikey_list_widget
         self._pin_input_widget = yubipin_widget
+        ...
+
+    def __init__(self, mypkcs: InternalPKCSWrapper, parent=None):
+        super().__init__(parent)
+        self.pkcs = mypkcs
         self._pin_authenticated = False
+
+        self._setup_ui(mypkcs)
 
     def _find_selected_widget_item(self) -> Optional[YubiKeyItemWidget]:
         selected_indexes = self.key_list_widget.selectedIndexes()

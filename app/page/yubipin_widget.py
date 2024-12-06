@@ -8,6 +8,7 @@ from PyKCS11 import PyKCS11Lib, PyKCS11Error
 
 
 class YubiPinWidget(QWidget):
+    _pin_label = QLabel
     _input: QLineEdit
     _authenticate_button: QPushButton
     _notification_text: QLabel
@@ -26,11 +27,13 @@ class YubiPinWidget(QWidget):
     _pin_authenticated_signal: pyqtSignal
 
     def _build_label(self):
-        return QLabel("PIN")
+        label = QLabel("PIN")
+        label.setEnabled(False)
+
+        return label
 
     def _build_input(self):
         # TODO do we want to fill in the default value?
-        # TODO do we want to have an override by our environment variable?
         i = QLineEdit()
 
         # By default, the button is enabled, but should be enabled when a YubiKey is selected
@@ -53,6 +56,7 @@ class YubiPinWidget(QWidget):
 
         label = self._build_label()
         layout.addWidget(label)
+        self._pin_label = label
 
         pin_input = self._build_input()
         layout.addWidget(pin_input)
@@ -146,6 +150,7 @@ class YubiPinWidget(QWidget):
         # Update the selected yubikey
         self._selected_yubikey = details
 
+        self._pin_label.setEnabled(on)
         self._input.setEnabled(on)
 
         # We don't want to always enable the auth button. Text has to be in there too.
