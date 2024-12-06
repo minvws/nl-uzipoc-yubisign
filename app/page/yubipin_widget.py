@@ -14,6 +14,9 @@ class YubiPinWidget(QWidget):
     # We can't enforce this into a Optional[YubikeyDetails], so we have to do it like this
     _selectedYubiKeySignal = pyqtSignal(object)
 
+    # This will get updated based on the incoming event
+    _selected_yubikey: Optional[YubikeyDetails]
+
     def _build_label(self):
         label = QLabel("YubiKey PIN")
         label.setFont(QFont("Arial", 14, QFont.Weight.Bold))
@@ -21,6 +24,8 @@ class YubiPinWidget(QWidget):
         return label
 
     def _build_input(self):
+        # TODO do we want to fill in the default value?
+        # TODO do we want to have an override by our environment variable?
         i = QLineEdit()
 
         # By default, the button is enabled, but should be enabled when a YubiKey is selected
@@ -38,8 +43,7 @@ class YubiPinWidget(QWidget):
 
         return button
 
-    def __init__(self) -> None:
-        super().__init__(None)
+    def _setup_ui(self):
         layout = QHBoxLayout()
 
         label = self._build_label()
@@ -51,25 +55,29 @@ class YubiPinWidget(QWidget):
         button = self._build_auth_button()
         layout.addWidget(button)
 
-        # Make this work with de-selecting as well
-
-        self._selectedYubiKeySignal.connect(self._internal_toggle_input)
-
         # Set this layout as the layout of the widget
         self.setLayout(layout)
 
+        self._selectedYubiKeySignal.connect(self._internal_select_yubikey)
         self._input = pin_input
         self._authenticate_button = button
+
+    def __init__(self) -> None:
+        super().__init__(None)
+        self._setup_ui()
+        self._selected_yubikey = None
 
     def get_value(self) -> str:
         return self._input.text()
 
     def _authenticate(self):
+        if not self._selected_yubikey:
+            return
+
         pin = self.get_value()
+
         # TODO shouldn't this an event configured by the upper class?
-        # TODO do we want to have an override by our environment variable?
-        # TODO do we want to fill in the default value?
-        # TODO select the correct yubikey here
+
         print("trying to authenticate")
 
     def _on_pin_edit(self, value: str):
@@ -81,13 +89,13 @@ class YubiPinWidget(QWidget):
 
     def toggle_input_field_ability(self, details: Optional[YubikeyDetails]):
         """on means that the input is useable"""
-        # Why use signals?
-        # TODO on disable, also set the authenticate button to off
-
         self._selectedYubiKeySignal.emit(details)
 
-    def _internal_toggle_input(self, details: Optional[YubikeyDetails]):
+    def _internal_select_yubikey(self, details: Optional[YubikeyDetails]):
         on = details is not None
+
+        # Update the selected yubikey
+        self._selected_yubikey = details
 
         self._input.setEnabled(on)
 
