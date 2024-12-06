@@ -26,7 +26,7 @@ class YubiPinWidget(QWidget):
     _pin_authenticated_signal: pyqtSignal
 
     def _build_label(self):
-        return QLabel("YubiKey PIN")
+        return QLabel("PIN")
 
     def _build_input(self):
         # TODO do we want to fill in the default value?
@@ -60,7 +60,7 @@ class YubiPinWidget(QWidget):
         button = self._build_auth_button()
         layout.addWidget(button)
 
-        notification_text = QLabel("OK or no")
+        notification_text = QLabel()
         notification_text.hide()
         layout.addWidget(notification_text)
         self._notification_text = notification_text

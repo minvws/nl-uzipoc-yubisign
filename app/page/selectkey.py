@@ -15,6 +15,8 @@ from app.pkcs import pkcs as InternalPKCSWrapper
 
 
 class SelectYubiKeyPage(QWizardPage):
+    _TITLE = "Selecteer de te gebruiken Yubikey en vul de PIN-code in"
+
     pkcs: InternalPKCSWrapper
     key_list_widget: QListWidget
     _pin_input_widget: YubiPinWidget
@@ -52,7 +54,7 @@ class SelectYubiKeyPage(QWizardPage):
 
     def __init__(self, mypkcs: InternalPKCSWrapper, parent=None):
         super().__init__(parent)
-        self.setTitle("Selecteer de te gebruiken yubikey")
+        self.setTitle(self._TITLE)
         self._prevent_backbutton_clicks()
 
         self.pkcs = mypkcs
