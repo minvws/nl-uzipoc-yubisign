@@ -125,14 +125,12 @@ class YubiPinWidget(QWidget):
         # TODO emit event to enable commit button
 
     def _on_pin_edit(self, value: str):
-        # We ceck if the value is not an empty string
-        if not value.strip() and self._authenticate_button.isEnabled():
-            self._authenticate_button.setEnabled(False)
-        else:
-            self._authenticate_button.setEnabled(True)
+        empty_text: bool = bool(not value.strip())
+        disable_auth_button: bool = empty_text and self._authenticate_button.isEnabled()
+
+        self._authenticate_button.setEnabled(not disable_auth_button)
 
     def toggle_input_field_ability(self, details: Optional[YubikeyDetails]):
-        """on means that the input is useable"""
         self._selectedYubiKeySignal.emit(details)
 
     def _internal_select_yubikey(self, details: Optional[YubikeyDetails]):
