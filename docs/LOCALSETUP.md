@@ -13,6 +13,9 @@ This application requires the [`yubico-piv-tool`](https://developers.yubico.com/
 - **`python3.13`**: Make sure the executable is also accessible from your local terminal.
 - **`git`**: To update the application when needed.
 
+This application should be used with the [Yubikey 5C NFC]( https://www.yubico.com/nl/product/yubikey-5-series/yubikey-5c-nfc/).
+
+
 
 #### Windows specific
 > When installing Python on Windows, make sure to add `python.exe` to your PATH and disable path length limit during the installation.
@@ -75,7 +78,7 @@ The `ACME_SERVER_DIRECTORY_URL` should be set to the the directory URL of the AC
 In the root of the project and the virtual environment activated, run the command below. Make sure you also have a Yubikey inserted in your computer.
 
 ```bash
-python3.13 -m app.wizard
+python -m app.wizard
 ```
 
 This will start up the application. Then, walk through the following steps:
