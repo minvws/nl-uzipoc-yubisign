@@ -10,9 +10,11 @@ from app.page.yubipin_widget import YubiPinWidget
 from app.yubikey_details import YubikeyDetails
 
 from .yubikeyitem import YubiKeyItemWidget
+from app.pkcs import pkcs as InternalPKCSWrapper
 
 
 class SelectYubiKeyPage(QWizardPage):
+    pkcs: InternalPKCSWrapper
     key_list_widget: QListWidget
     _pin_input_widget: YubiPinWidget
 
@@ -43,7 +45,7 @@ class SelectYubiKeyPage(QWizardPage):
 
         return widget
 
-    def __init__(self, mypkcs, parent=None):
+    def __init__(self, mypkcs: InternalPKCSWrapper, parent=None):
         super().__init__(parent)
         self.setTitle("Selecteer de te gebruiken yubikey")
         self._prevent_backbutton_clicks()
@@ -56,8 +58,8 @@ class SelectYubiKeyPage(QWizardPage):
         layout.addWidget(yubikey_list_widget)
 
         # TODO add PIN-code input (password)
-        # Add use default button?
-        yubipin_widget = YubiPinWidget()
+        # TODO Add PyKCS11.PyKCS11Lib lib here for authenticating
+        yubipin_widget = YubiPinWidget(mypkcs.pkcs11)
         layout.addWidget(yubipin_widget)
 
         # yubipin_widget.

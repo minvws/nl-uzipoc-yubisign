@@ -5,6 +5,8 @@ from PyQt6.QtGui import QFont
 
 from app.yubikey_details import YubikeyDetails
 
+from PyKCS11 import PyKCS11Lib
+
 
 class YubiPinWidget(QWidget):
     _input: QLineEdit
@@ -16,6 +18,9 @@ class YubiPinWidget(QWidget):
 
     # This will get updated based on the incoming event
     _selected_yubikey: Optional[YubikeyDetails]
+
+    # The lib used for authenticating
+    _pykcs_lib: PyKCS11Lib
 
     def _build_label(self):
         label = QLabel("YubiKey PIN")
@@ -62,9 +67,10 @@ class YubiPinWidget(QWidget):
         self._input = pin_input
         self._authenticate_button = button
 
-    def __init__(self) -> None:
+    def __init__(self, pykcs11lib: PyKCS11Lib) -> None:
         super().__init__(None)
         self._setup_ui()
+        self._pykcs_lib = pykcs11lib
         self._selected_yubikey = None
 
     def get_value(self) -> str:
