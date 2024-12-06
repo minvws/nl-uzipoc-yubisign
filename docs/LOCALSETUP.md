@@ -2,7 +2,7 @@
 First clone this repository and checkout the `uzipoc_q4_2024` branch. You can then follow this document to set up and run the application.
 
 ```bash
-git clone --single-branch --branch uzipoc_q4_2024 https://github.com/minvws/nl-uzipoc-yubisign
+git clone --single-branch --branch uzipoc_q4_2024 git@github.com:minvws/nl-uzipoc-yubisign.git
 ```
 
 
