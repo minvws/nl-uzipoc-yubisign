@@ -4,7 +4,9 @@ from PyQt6.QtWidgets import QLineEdit, QLabel, QHBoxLayout, QWidget, QPushButton
 
 from app.yubikey_details import YubikeyDetails
 
-from PyKCS11 import PyKCS11Lib, PyKCS11Error
+from PyKCS11 import PyKCS11Lib
+
+from app.yubikey_pin_authenticator import YubikeyPINAuthenticator
 
 
 class YubiPinWidget(QWidget):
@@ -86,30 +88,6 @@ class YubiPinWidget(QWidget):
     def get_value(self) -> str:
         return self._input.text()
 
-    def _selected_yubikey_slot_available(self) -> bool:
-        return self._selected_yubikey.slot in self._pykcs_lib.getSlotList()
-
-    def _yubikey_available(self) -> bool:
-        if not self._selected_yubikey:
-            return False
-
-        if not self._selected_yubikey_slot_available():
-            return False
-
-        return True
-
-    def _is_pin_valid_to_yubikey(self) -> bool:
-        try:
-            pin = self.get_value()
-            session = self._pykcs_lib.openSession(self._selected_yubikey.slot)
-
-            # This will throw an exception if the pin is incorrect
-            session.login(pin)
-        except PyKCS11Error:
-            return False
-
-        return True
-
     def _notify_pin_ok(self):
         self._notification_text.setText("OK")
         self._notification_text.show()
@@ -119,13 +97,15 @@ class YubiPinWidget(QWidget):
         self._notification_text.show()
 
     def _authenticate(self):
-        # TODO shouldn't this an event configured by the upper class?
-        if not self._yubikey_available():
+        # TODO shouldn't this be handled by a signal configured from the QT page that's using it?
+        # Now, we are tightly coupling PIN authentication to this class
+
+        if not self._selected_yubikey:
             return
 
-        authenticated: bool = self._is_pin_valid_to_yubikey()
+        ok: bool = YubikeyPINAuthenticator().login(self.get_value())
 
-        if not authenticated:
+        if not ok:
             self._notify_pin_incorrect()
             return
 
