@@ -1,7 +1,6 @@
 from typing import Optional
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QLineEdit, QLabel, QHBoxLayout, QWidget, QPushButton
-from PyQt6.QtGui import QFont
 
 from app.yubikey_details import YubikeyDetails
 
@@ -11,7 +10,6 @@ from PyKCS11 import PyKCS11Lib, PyKCS11Error
 class YubiPinWidget(QWidget):
     _input: QLineEdit
     _authenticate_button: QPushButton
-
     _notification_text: QLabel
 
     # What if we have a signal that can send a change with a yubikey or nothing. Then we don't need a booleand
@@ -84,11 +82,14 @@ class YubiPinWidget(QWidget):
     def get_value(self) -> str:
         return self._input.text()
 
+    def _selected_yubikey_slot_available(self) -> bool:
+        return self._selected_yubikey.slot in self._pykcs_lib.getSlotList()
+
     def _yubikey_available(self) -> bool:
         if not self._selected_yubikey:
             return False
 
-        if self._selected_yubikey.slot not in self._pykcs_lib.getSlotList():
+        if not self._selected_yubikey_slot_available():
             return False
 
         return True
@@ -127,7 +128,8 @@ class YubiPinWidget(QWidget):
         self._notify_pin_ok()
         self._pin_authenticated_signal.emit()
 
-        # TODO emit event to enable commit button
+        # TODO should we disable the auth button again?
+        # TODO should we add a loading state?
 
     def _on_pin_edit(self, value: str):
         empty_text: bool = bool(not value.strip())
