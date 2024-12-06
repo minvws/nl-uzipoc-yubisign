@@ -1,14 +1,18 @@
+from typing import Optional
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QLineEdit, QLabel, QHBoxLayout, QWidget, QPushButton
 from PyQt6.QtGui import QFont
+
+from app.yubikey_details import YubikeyDetails
 
 
 class YubiPinWidget(QWidget):
     _input: QLineEdit
     _authenticate_button: QPushButton
 
-    # The bool is an indicator for the on/off toggle
-    _yubiKeySelectedSignal = pyqtSignal(bool)
+    # What if we have a signal that can send a change with a yubikey or nothing. Then we don't need a booleand
+    # We can't enforce this into a Optional[YubikeyDetails], so we have to do it like this
+    _selectedYubiKeySignal = pyqtSignal(object)
 
     def _build_label(self):
         label = QLabel("YubiKey PIN")
@@ -48,7 +52,8 @@ class YubiPinWidget(QWidget):
         layout.addWidget(button)
 
         # Make this work with de-selecting as well
-        self._yubiKeySelectedSignal.connect(self._internal_toggle_input)
+
+        self._selectedYubiKeySignal.connect(self._internal_toggle_input)
 
         # Set this layout as the layout of the widget
         self.setLayout(layout)
@@ -74,14 +79,18 @@ class YubiPinWidget(QWidget):
         else:
             self._authenticate_button.setEnabled(True)
 
-    def toggle_input_field_ability(self, on: bool):
+    def toggle_input_field_ability(self, details: Optional[YubikeyDetails]):
         """on means that the input is useable"""
         # Why use signals?
         # TODO on disable, also set the authenticate button to off
-        self._yubiKeySelectedSignal.emit(on)
 
-    def _internal_toggle_input(self, on: bool):
+        self._selectedYubiKeySignal.emit(details)
+
+    def _internal_toggle_input(self, details: Optional[YubikeyDetails]):
+        on = details is not None
+
         self._input.setEnabled(on)
 
+        # We don't want to always enable the auth button. Text has to be in there too.
         if not on:
             self._authenticate_button.setEnabled(False)

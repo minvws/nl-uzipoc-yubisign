@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import (
 )
 
 from app.page.yubipin_widget import YubiPinWidget
+from app.yubikey_details import YubikeyDetails
 
 from .yubikeyitem import YubiKeyItemWidget
 
@@ -78,8 +79,24 @@ class SelectYubiKeyPage(QWizardPage):
 
         return widget
 
+    def _find_selected_yubikey_details_from_widget(self):
+        selected_yubikey_widget_item: Optional[YubiKeyItemWidget] = self._find_selected_widget_item()
+
+        if selected_yubikey_widget_item is None:
+            return None
+
+        slot, name, serial = selected_yubikey_widget_item.getYubiKeyDetails()
+        return YubikeyDetails(
+            slot,
+            name,
+            serial,
+        )
+
     def on_yubikey_item_change(self):
-        self._pin_input_widget.toggle_input_field_ability(on=self.has_selection())
+        selected_yubikey: Optional[YubikeyDetails] = self._find_selected_yubikey_details_from_widget()
+
+        # Pass none if nothing is selected
+        self._pin_input_widget.toggle_input_field_ability(details=selected_yubikey)
 
         # The next button does not have to be enabled manually, just trigger the completion signal.
         # This will re-check the isCompleted function
