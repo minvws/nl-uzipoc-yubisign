@@ -23,7 +23,7 @@ from .page.savetoyubi import SaveToYubiKeyPage
 import urllib.parse
 from dotenv import load_dotenv
 
-DEFAULT_ACME_CA_SERVER_URL = "https://acme.proeftuin.uzi-online.irealisatie.nl/directory"
+DEFAULT_ACME_CA_SERVER_URL = "https://acme.proeftuin.uzi-online.rdobeheer.nl/directory"
 DEFAULT_YUBIKEY_PIN = "123456"
 DEFAULT_PROEFTUIN_OIDC_LOGIN_URL = "https://proeftuin.uzi-online.irealisatie.nl"
 
