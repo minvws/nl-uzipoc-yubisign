@@ -5,12 +5,14 @@ from PyQt6.QtGui import QFont
 
 from app.yubikey_details import YubikeyDetails
 
-from PyKCS11 import PyKCS11Lib
+from PyKCS11 import PyKCS11Lib, PyKCS11Error
 
 
 class YubiPinWidget(QWidget):
     _input: QLineEdit
     _authenticate_button: QPushButton
+
+    _notification_text: QLabel
 
     # What if we have a signal that can send a change with a yubikey or nothing. Then we don't need a booleand
     # We can't enforce this into a Optional[YubikeyDetails], so we have to do it like this
@@ -23,10 +25,7 @@ class YubiPinWidget(QWidget):
     _pykcs_lib: PyKCS11Lib
 
     def _build_label(self):
-        label = QLabel("YubiKey PIN")
-        label.setFont(QFont("Arial", 14, QFont.Weight.Bold))
-
-        return label
+        return QLabel("YubiKey PIN")
 
     def _build_input(self):
         # TODO do we want to fill in the default value?
@@ -60,6 +59,11 @@ class YubiPinWidget(QWidget):
         button = self._build_auth_button()
         layout.addWidget(button)
 
+        notification_text = QLabel("OK or no")
+        notification_text.hide()
+        layout.addWidget(notification_text)
+        self._notification_text = notification_text
+
         # Set this layout as the layout of the widget
         self.setLayout(layout)
 
@@ -76,15 +80,49 @@ class YubiPinWidget(QWidget):
     def get_value(self) -> str:
         return self._input.text()
 
-    def _authenticate(self):
+    def _yubikey_available(self) -> bool:
         if not self._selected_yubikey:
+            return False
+
+        if self._selected_yubikey.slot not in self._pykcs_lib.getSlotList():
+            return False
+
+        return True
+
+    def _is_pin_valid_to_yubikey(self) -> bool:
+        try:
+            pin = self.get_value()
+            session = self._pykcs_lib.openSession(self._selected_yubikey.slot)
+
+            # This will throw an exception if the pin is incorrect
+            session.login(pin)
+        except PyKCS11Error:
+            return False
+
+        return True
+
+    def _notify_pin_ok(self):
+        self._notification_text.setText("OK")
+        self._notification_text.show()
+
+    def _notify_pin_incorrect(self):
+        self._notification_text.setText("PIN incorrect")
+        self._notification_text.show()
+
+    def _authenticate(self):
+        # TODO shouldn't this an event configured by the upper class?
+        if not self._yubikey_available():
             return
 
-        pin = self.get_value()
+        authenticated: bool = self._is_pin_valid_to_yubikey()
 
-        # TODO shouldn't this an event configured by the upper class?
+        if not authenticated:
+            self._notify_pin_incorrect()
+            return
 
-        print("trying to authenticate")
+        self._notify_pin_ok()
+
+        # TODO emit event to enable commit button
 
     def _on_pin_edit(self, value: str):
         # We ceck if the value is not an empty string

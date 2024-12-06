@@ -32,7 +32,7 @@ class ACME:
         Create an account. As per acme standard an email needs
         to be provided.
         """
-        areq = {"termsOfServiceAgreed": True, "contact": ["mailto:email@example.com"]}
+        areq = {"termsOfServiceAgreed": True, "contact": ["mailto:helpdesk@irealisatie.nl"]}
         self.client.account_request(areq)
 
     def order(self, keynum):
