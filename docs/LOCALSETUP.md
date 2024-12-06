@@ -13,10 +13,15 @@ This application requires the [`yubico-piv-tool`](https://developers.yubico.com/
 
 ### 1.1 Creating and activating a virtual environment
 
-To create an isolated environment where we can install the Python requirements in, use the below command to use the `venv` package.
+First, verify if the Python version was set to `3.13`
 
 ```bash
-python3.13 -m venv .venv
+python --version
+```
+Then to create an isolated environment where we can install the Python requirements in, use the below command to use the `venv` package.
+
+```bash
+python -m venv .venv
 ```
 
 For UNIX-based systems, the environment can be activated with the following command.
@@ -25,7 +30,7 @@ For UNIX-based systems, the environment can be activated with the following comm
 source .venv/bin/activate
 ```
 
-For Windows systems, this is `.\venv\Scripts\activate`.
+For Windows systems, this is `.\.venv\Scripts\activate`.
 
 ### 1.2 Installing the requirements
 
