@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (
     QListWidget,
     QListWidgetItem,
 )
+from PyQt6.QtCore import pyqtSignal
 
 from app.page.yubipin_widget import YubiPinWidget
 from app.yubikey_details import YubikeyDetails
@@ -17,6 +18,10 @@ class SelectYubiKeyPage(QWizardPage):
     pkcs: InternalPKCSWrapper
     key_list_widget: QListWidget
     _pin_input_widget: YubiPinWidget
+
+    # This will be called when the user has succesfully authenticated
+    _pin_authenticated_signal = pyqtSignal()
+    _pin_authenticated: bool
 
     def _prevent_backbutton_clicks(self):
         self.setCommitPage(True)
@@ -57,14 +62,13 @@ class SelectYubiKeyPage(QWizardPage):
         layout = QVBoxLayout(self)
         layout.addWidget(yubikey_list_widget)
 
-        # TODO add PIN-code input (password)
-        # TODO Add PyKCS11.PyKCS11Lib lib here for authenticating
-        yubipin_widget = YubiPinWidget(mypkcs.pkcs11)
+        yubipin_widget = YubiPinWidget(mypkcs.pkcs11, self._pin_authenticated_signal)
         layout.addWidget(yubipin_widget)
 
         # yubipin_widget.
         self.key_list_widget = yubikey_list_widget
         self._pin_input_widget = yubipin_widget
+        self._pin_authenticated = False
 
     def _find_selected_widget_item(self) -> Optional[YubiKeyItemWidget]:
         selected_indexes = self.key_list_widget.selectedIndexes()
@@ -110,7 +114,7 @@ class SelectYubiKeyPage(QWizardPage):
 
     def isComplete(self) -> bool:
         # TODO this should also include if the PIN has been filled in and succesful
-        return self.has_selection()
+        return self.has_selection() and self._pin_authenticated
 
     def nextId(self):
         widget = self._find_selected_widget_item()
@@ -126,10 +130,15 @@ class SelectYubiKeyPage(QWizardPage):
         )
         return super().nextId()
 
+    def _on_yubikey_authentication(self):
+        self._pin_authenticated = True
+        self.completeChanged.emit()
+
     def initializePage(self) -> None:
         super().initializePage()
 
         self.key_list_widget.itemSelectionChanged.connect(self.on_yubikey_item_change)
+        self._pin_authenticated_signal.connect(self._on_yubikey_authentication)
 
     def cleanupPage(self) -> None:
         self.key_list_widget.clearSelection()

@@ -24,6 +24,9 @@ class YubiPinWidget(QWidget):
     # The lib used for authenticating
     _pykcs_lib: PyKCS11Lib
 
+    # This is being passed in by a parent
+    _pin_authenticated_signal: pyqtSignal
+
     def _build_label(self):
         return QLabel("YubiKey PIN")
 
@@ -71,11 +74,12 @@ class YubiPinWidget(QWidget):
         self._input = pin_input
         self._authenticate_button = button
 
-    def __init__(self, pykcs11lib: PyKCS11Lib) -> None:
+    def __init__(self, pykcs11lib: PyKCS11Lib, pin_authenticated_signal: pyqtSignal) -> None:
         super().__init__(None)
         self._setup_ui()
         self._pykcs_lib = pykcs11lib
         self._selected_yubikey = None
+        self._pin_authenticated_signal = pin_authenticated_signal
 
     def get_value(self) -> str:
         return self._input.text()
@@ -121,6 +125,7 @@ class YubiPinWidget(QWidget):
             return
 
         self._notify_pin_ok()
+        self._pin_authenticated_signal.emit()
 
         # TODO emit event to enable commit button
 
