@@ -1,6 +1,10 @@
 # Local setup
+First clone this repository and checkout the `uzipoc_q4_2024` branch. You can then follow this document to set up and run the application.
 
-After cloning this repository, you can follow this document to set up and run the application.
+```bash
+git clone --single-branch --branch uzipoc_q4_2024 https://github.com/minvws/nl-uzipoc-yubisign
+```
+
 
 ## Requirements
 
