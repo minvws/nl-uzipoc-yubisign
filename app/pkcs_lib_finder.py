@@ -15,7 +15,7 @@ class PKCS11LibFinder:
     _LINUX_X86_DEFAULT_PATH = pathlib.Path("/usr/lib/libykcs11.so")
     _LINUX_X64_DEFAULT_PATH = pathlib.Path("/usr/lib64/libykcs11.so")
 
-    _WINDOWS_DEFAULT_LOCATION = pathlib.Path("C:\\Program Files\\Yubico\\YubiKey PIV Tool\\ykcs11.dll")
+    _WINDOWS_DEFAULT_LOCATION = pathlib.Path("C:\\Program Files\\Yubico\\Yubico PIV Tool\\bin\\libykcs11.dll")
     _WINDOWS_DEFAULT_SYSTEM32_PATH = pathlib.Path("C:\\Windows\\System32\\ykcs11.dll")
     _WINDOWS_DEFAULT_SYSWOW64_PATH = pathlib.Path("C:\\Windows\\SysWOW64\\ykcs11.dll")
 
