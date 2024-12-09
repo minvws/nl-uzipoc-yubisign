@@ -1,5 +1,6 @@
 import logging
 from os import getenv
+import os
 import pathlib
 from typing import Optional
 import PyKCS11
@@ -27,6 +28,9 @@ class PKCS11LibFinder:
 
             pkcslib_ref = getenv("PYKCS11LIB")
             x = pathlib.Path(pkcslib_ref)
+
+            os.environ["PATH"] += str(x)
+
             lib.load(str(x))
 
         except Exception:
