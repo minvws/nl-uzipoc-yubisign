@@ -155,4 +155,5 @@ class SelectYubiKeyPage(QWizardPage):
 
     def cleanupPage(self) -> None:
         self._pin_authenticated = False
+        self._pin_input_widget.cleanup()
         self.key_list_widget.clearSelection()

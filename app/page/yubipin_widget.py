@@ -20,6 +20,9 @@ class YubiPinWidget(QWidget):
     # We can't enforce this into a Optional[YubikeyDetails], so we have to do it like this
     _selectedYubiKeySignal = pyqtSignal(object)
 
+    # This is being called when the page above cleans up
+    _cleanup_signal = pyqtSignal()
+
     # This will get updated based on the incoming signal
     _selected_yubikey: Optional[YubikeyDetails]
 
@@ -75,6 +78,8 @@ class YubiPinWidget(QWidget):
         self.setLayout(layout)
 
         self._selectedYubiKeySignal.connect(self._internal_select_yubikey)
+        self._cleanup_signal.connect(self._on_cleanup_signal)
+
         self._input = pin_input
         self._authenticate_button = button
 
@@ -124,7 +129,10 @@ class YubiPinWidget(QWidget):
         self._selectedYubiKeySignal.emit(details)
 
     def cleanup(self):
-        self._pin_label.clear()
+        self._cleanup_signal.emit()
+
+    def _on_cleanup_signal(self):
+        self._notification_text.hide()
 
     def _internal_select_yubikey(self, details: Optional[YubikeyDetails]):
         on = details is not None
