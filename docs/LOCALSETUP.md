@@ -21,11 +21,13 @@ This application should be used with the [Yubikey 5C NFC]( https://www.yubico.co
 > When installing Python on Windows, make sure to add `python.exe` to your PATH and disable path length limit during the installation.
 
 > The PIV tool can be installed via [this link](https://developers.yubico.com/yubico-piv-tool/Releases/).
-- Microsoft Visual C++ 14.0 or greater, installable via the [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/). Make sure these components are installed:
+
+- Make sure you install Microsoft Visual C++ 14.0 or greater, installable via the [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/). Make sure these components are installed:
   - Visual C++ Build tools core features.
   - MSVC toolset C++ 2019 v142 (x86,x64)
   - Visual C++ 2019 Redistributable Update
   - Windows 10 SDK (10.0.17763.0) for Desktop C++
+- Make sure you have added the directory where the `libykcs11.dll` library is located to the system PATH. See [the documentation](https://developers.yubico.com/yubico-piv-tool/YKCS11/) for more information.
 
 
 
