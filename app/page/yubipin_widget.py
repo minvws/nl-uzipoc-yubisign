@@ -109,14 +109,12 @@ class YubiPinWidget(QWidget):
         )
 
         if not ok:
+            # TODO Disable auth button again
             self._notify_pin_incorrect()
             return
 
         self._notify_pin_ok()
         self._pin_authenticated_signal.emit()
-
-        # TODO should we disable the auth button again?
-        # TODO should we add a loading state?
 
     def _on_pin_edit(self, value: str):
         empty_text: bool = bool(not value.strip())
