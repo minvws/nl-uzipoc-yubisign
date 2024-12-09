@@ -119,6 +119,9 @@ class YubiPinWidget(QWidget):
 
         self._notify_pin_ok()
 
+        # Close all sessions so we can log back in on later moments
+        self._pykcs_lib.closeAllSessions(self._selected_yubikey.slot)
+
     def _on_pin_edit(self, value: str):
         empty_text: bool = bool(not value.strip())
         disable_auth_button: bool = empty_text and self._authenticate_button.isEnabled()
