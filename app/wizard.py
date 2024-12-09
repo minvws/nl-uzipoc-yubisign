@@ -61,6 +61,9 @@ if __name__ == "__main__":
 
     app = QApplication(sys.argv)
 
+    pkcslib_ref = getenv("PYKCS11LIB")
+    print(f"Using {pkcslib_ref}")
+
     yubikey_pin = getenv(
         "YUBIKEY_PIN",
     )
