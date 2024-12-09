@@ -21,7 +21,7 @@ class YubikeyPINAuthenticator:
 
             # This will throw an exception if the pin is incorrect
             session.login(pin)
-        except PyKCS11Error as exc:
+        except PyKCS11Error:
             return False
 
         return True
