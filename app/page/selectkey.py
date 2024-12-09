@@ -112,6 +112,8 @@ class SelectYubiKeyPage(QWizardPage):
         )
 
     def on_yubikey_item_change(self):
+        # TODO on deselect, clear pin, disable auth button and set _pin_authenticated_signal to False
+
         selected_yubikey: Optional[YubikeyDetails] = self._find_selected_yubikey_details_from_widget()
 
         # Pass none if nothing is selected
@@ -126,7 +128,6 @@ class SelectYubiKeyPage(QWizardPage):
         return self._find_selected_widget_item() is not None
 
     def isComplete(self) -> bool:
-        # TODO this should also include if the PIN has been filled in and succesful
         return self.has_selection() and self._pin_authenticated
 
     def nextId(self):
