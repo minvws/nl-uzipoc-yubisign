@@ -20,6 +20,8 @@ class AlgorithmIdentifier(Sequence):
 
 
 class pkcs:
+    _3DES_MANAGEMENT_KEY = "010203040506070801020304050607080102030405060708"
+
     DEFAULT_LIB_LOCATION = "/usr/lib64/libykcs11.so.2"
     DEFAULT_HOMEBREW_LOCATION = "/opt/homebrew/lib/libykcs11.dylib"
 
@@ -44,12 +46,13 @@ class pkcs:
 
     def getsession(self, slot):
         print("Open", slot)
+
         if slot not in self.sessions:
-            # self.sessions[slot] = self.pkcs11.openSession(slot)
-            # self.sessions[slot].login("123456")
             self.sessions[slot] = self.pkcs11.openSession(slot, PyKCS11.CKF_RW_SESSION)
+
+            # This works because it's logging in with the 3DES management key
             self.sessions[slot].login(
-                "010203040506070801020304050607080102030405060708",
+                self._3DES_MANAGEMENT_KEY,
                 user_type=PyKCS11.CKU_SO,
             )
         return self.sessions[slot]
@@ -59,7 +62,7 @@ class pkcs:
         if slot not in self.sessions:
             self.sessions[slot] = self.pkcs11.openSession(slot, PyKCS11.CKF_RW_SESSION)
             self.sessions[slot].login(
-                "010203040506070801020304050607080102030405060708",
+                self._3DES_MANAGEMENT_KEY,
                 user_type=PyKCS11.CKU_SO,
             )
         return self.sessions[slot]
