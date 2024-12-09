@@ -17,8 +17,7 @@ from app.pkcs import pkcs as InternalPKCSWrapper
 class SelectYubiKeyPage(QWizardPage):
     _TITLE = "Selectie en authenticatie Yubikey"
     _SUBTITLE = """
-        Selecteer de desbetreffende Yubikey en vul vervolgens hiervan de PIN-code in.
-        Let op: wanneer je te vaak een foute PIN-code ingeeft word de key geblokkeerd en moet deze handmatig worden gereset.
+    Selecteer de desbetreffende Yubikey en vul vervolgens hiervan de PIN-code in. De standaard PIN-code is alvast ingevuld.
     """
 
     pkcs: InternalPKCSWrapper
@@ -26,7 +25,7 @@ class SelectYubiKeyPage(QWizardPage):
     _pin_input_widget: YubiPinWidget
 
     # This will be called when the user has succesfully authenticated
-    _pin_authenticated_signal = pyqtSignal()
+    _pin_authenticated_signal = pyqtSignal(bool)
     _pin_authenticated: bool
 
     def _prevent_backbutton_clicks(self):
@@ -58,7 +57,7 @@ class SelectYubiKeyPage(QWizardPage):
 
     def _setup_ui(self, pkcslib: InternalPKCSWrapper):
         self.setTitle(self._TITLE)
-        self.setSubTitle(self._SUBTITLE)
+        self.setSubTitle(self._SUBTITLE.strip())
 
         self._prevent_backbutton_clicks()
 
@@ -71,10 +70,8 @@ class SelectYubiKeyPage(QWizardPage):
         yubipin_widget = YubiPinWidget(pkcslib.pkcs11, self._pin_authenticated_signal)
         layout.addWidget(yubipin_widget)
 
-        # yubipin_widget.
         self.key_list_widget = yubikey_list_widget
         self._pin_input_widget = yubipin_widget
-        ...
 
     def __init__(self, mypkcs: InternalPKCSWrapper, parent=None):
         super().__init__(parent)
@@ -143,10 +140,11 @@ class SelectYubiKeyPage(QWizardPage):
             "selectedYubiKey",
             widget.getYubiKeyDetails(),
         )
+        # Should we set the PIN here?
         return super().nextId()
 
-    def _on_yubikey_authentication(self):
-        self._pin_authenticated = True
+    def _on_yubikey_authentication(self, authenticated: bool):
+        self._pin_authenticated = authenticated
         self.completeChanged.emit()
 
     def initializePage(self) -> None:

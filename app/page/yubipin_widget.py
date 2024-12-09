@@ -10,6 +10,8 @@ from app.yubikey_pin_authenticator import YubikeyPINAuthenticator
 
 
 class YubiPinWidget(QWidget):
+    _DEFAULT_YUBIKEY_PIN = "123456"
+
     _pin_label = QLabel
     _input: QLineEdit
     _authenticate_button: QPushButton
@@ -35,8 +37,7 @@ class YubiPinWidget(QWidget):
         return label
 
     def _build_input(self):
-        # TODO do we want to fill in the default value?
-        i = QLineEdit()
+        i = QLineEdit(self._DEFAULT_YUBIKEY_PIN)
 
         # By default, the button is enabled, but should be enabled when a YubiKey is selected
         i.setEnabled(False)
@@ -91,15 +92,15 @@ class YubiPinWidget(QWidget):
     def _notify_pin_ok(self):
         self._notification_text.setText("OK")
         self._notification_text.show()
+        self._pin_authenticated_signal.emit(True)
 
     def _notify_pin_incorrect(self):
         self._notification_text.setText("PIN incorrect")
         self._notification_text.show()
 
-    def _authenticate(self):
-        # TODO shouldn't this be handled by a signal configured from the QT page that's using it?
-        # Now, we are tightly coupling PIN authentication to this class
+        self._pin_authenticated_signal.emit(False)
 
+    def _authenticate(self):
         if not self._selected_yubikey:
             return
 
@@ -109,12 +110,10 @@ class YubiPinWidget(QWidget):
         )
 
         if not ok:
-            # TODO Disable auth button again
             self._notify_pin_incorrect()
             return
 
         self._notify_pin_ok()
-        self._pin_authenticated_signal.emit()
 
     def _on_pin_edit(self, value: str):
         empty_text: bool = bool(not value.strip())
