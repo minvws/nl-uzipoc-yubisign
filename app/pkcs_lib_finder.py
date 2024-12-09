@@ -27,11 +27,11 @@ class PKCS11LibFinder:
             lib = PyKCS11.PyKCS11Lib()
 
             pkcslib_ref = getenv("PYKCS11LIB")
-            x = pathlib.Path(pkcslib_ref)
+            # x = pathlib.Path(pkcslib_ref)
 
-            os.environ["PATH"] += str(x)
+            # os.environ["PATH"] += str(x)
 
-            lib.load(str(x))
+            lib.load(pkcslib_ref)
 
         except Exception:
             return None
