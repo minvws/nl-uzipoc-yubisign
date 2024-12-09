@@ -17,7 +17,13 @@ class SelectYubiKeyPage(QWizardPage):
 
     def _get_yubikeys(self):
         keys = []
-        for slot in self.pkcs.pkcs11.getSlotList():
+
+        try:
+            slots = self.pkcs.pkcs11.getSlotList()
+        except Exception:
+            return []
+
+        for slot in slots:
             try:
                 info = self.pkcs.pkcs11.getTokenInfo(slot)
                 keys += [(info.model, info.serialNumber, info.label, slot)]
