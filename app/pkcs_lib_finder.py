@@ -33,7 +33,7 @@ class PKCS11LibFinder:
 
             print("lib loaded!!")
         except Exception:
-            return None
+            raise
 
         return lib
 
