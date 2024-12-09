@@ -17,17 +17,16 @@ class YubiPinWidget(QWidget):
     _authenticate_button: QPushButton
     _notification_text: QLabel
 
-    # What if we have a signal that can send a change with a yubikey or nothing. Then we don't need a booleand
     # We can't enforce this into a Optional[YubikeyDetails], so we have to do it like this
     _selectedYubiKeySignal = pyqtSignal(object)
 
-    # This will get updated based on the incoming event
+    # This will get updated based on the incoming signal
     _selected_yubikey: Optional[YubikeyDetails]
 
     # The lib used for authenticating
     _pykcs_lib: PyKCS11Lib
 
-    # This is being passed in by a parent
+    # This is being passed in
     _pin_authenticated_signal: pyqtSignal
 
     def _build_label(self):
@@ -124,10 +123,13 @@ class YubiPinWidget(QWidget):
     def toggle_input_field_ability(self, details: Optional[YubikeyDetails]):
         self._selectedYubiKeySignal.emit(details)
 
+    def cleanup(self):
+        self._pin_label.clear()
+
     def _internal_select_yubikey(self, details: Optional[YubikeyDetails]):
         on = details is not None
 
-        # Update the selected yubikey
+        # Update the selected yubikey if any
         self._selected_yubikey = details
 
         self._pin_label.setEnabled(on)
