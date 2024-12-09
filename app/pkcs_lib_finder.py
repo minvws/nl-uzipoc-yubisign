@@ -23,7 +23,9 @@ class PKCS11LibFinder:
         try:
             # This is being handled internally in the library pointing to the PYKCS11LIB variable
             lib = PyKCS11.PyKCS11Lib()
-            lib.load()
+
+            x = pathlib.Path("C:\\Program Files\\Yubico\\Yubico PIV Tool\\bin\\libykcs11.dll")
+            lib.load(str(x))
         except Exception:
             return None
 
@@ -65,6 +67,6 @@ class PKCS11LibFinder:
 
     def find(self) -> PyKCS11.PyKCS11Lib:
         # If the PYKCS11LIB environment variable is not set, try the default locations
-        lib = self._load_lib_from_env() or self._try_load_from_default_paths()
+        lib = self._load_lib_from_env()
 
         return lib
