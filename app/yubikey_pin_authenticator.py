@@ -13,13 +13,7 @@ class YubikeyPINAuthenticator:
         return key.slot in self._pykcs11lib.getSlotList()
 
     def _key_available(self, key: YubikeyDetails) -> bool:
-        if not key:
-            return False
-
-        if not self._selected_yubikey_slot_available(key):
-            return False
-
-        return True
+        return self._selected_yubikey_slot_available(key)
 
     def _is_pin_valid_to_yubikey(self, slot: str, pin: str) -> bool:
         try:
