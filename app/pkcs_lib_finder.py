@@ -1,4 +1,5 @@
 import logging
+from os import getenv
 import pathlib
 from typing import Optional
 import PyKCS11
@@ -24,8 +25,10 @@ class PKCS11LibFinder:
             # This is being handled internally in the library pointing to the PYKCS11LIB variable
             lib = PyKCS11.PyKCS11Lib()
 
-            x = pathlib.Path("C:\\Program Files\\Yubico\\Yubico PIV Tool\\bin\\libykcs11.dll")
+            pkcslib_ref = getenv("PYKCS11LIB")
+            x = pathlib.Path(pkcslib_ref)
             lib.load(str(x))
+
         except Exception:
             return None
 
