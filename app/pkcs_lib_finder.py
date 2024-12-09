@@ -30,6 +30,8 @@ class PKCS11LibFinder:
             x = pathlib.Path(pkcslib_ref)
 
             lib.load(x)
+
+            print("lib loaded!!")
         except Exception:
             return None
 
