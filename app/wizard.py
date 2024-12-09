@@ -57,9 +57,7 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
-    env_file_path = PROJECT_ROOT / ".env"
-    load_dotenv(dotenv_path=env_file_path)
-    print(f"Loaded environment variables from {env_file_path}")
+    load_dotenv()
 
     app = QApplication(sys.argv)
 
