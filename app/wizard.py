@@ -1,4 +1,5 @@
 from os import getenv
+from pathlib import Path
 import sys
 
 from PyQt6.QtWidgets import (
@@ -23,7 +24,9 @@ from .page.savetoyubi import SaveToYubiKeyPage
 import urllib.parse
 from dotenv import load_dotenv
 
-DEFAULT_ACME_CA_SERVER_URL = "https://acme.proeftuin.uzi-online.irealisatie.nl/directory"
+PROJECT_ROOT = Path(__file__).parent.parent
+
+DEFAULT_ACME_CA_SERVER_URL = "https://acme.proeftuin.uzi-online.rdobeheer.nl/directory"
 DEFAULT_YUBIKEY_PIN = "123456"
 DEFAULT_PROEFTUIN_OIDC_LOGIN_URL = "https://proeftuin.uzi-online.irealisatie.nl"
 
@@ -55,6 +58,7 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     load_dotenv()
+
     app = QApplication(sys.argv)
 
     yubikey_pin = getenv(
@@ -65,7 +69,15 @@ if __name__ == "__main__":
     pkcscls = pkcs(pykcs11lib=pkcslib, yubikey_pin=yubikey_pin)
 
     oidc_provider_url = urllib.parse.urlparse(getenv("OIDC_PROVIDER_BASE_URL", DEFAULT_PROEFTUIN_OIDC_LOGIN_URL))
+    print(
+        f'Using OIDC base URL "{oidc_provider_url.geturl()}"',
+    )
+
     acme_ca_server_url = urllib.parse.urlparse(getenv("ACME_SERVER_DIRECTORY_URL", DEFAULT_ACME_CA_SERVER_URL))
+    print(
+        f'Using ACME server directory URL "{acme_ca_server_url.geturl()}"',
+    )
+
     directory_config = ACMEDirectoryConfigurationParser().parse(acme_ca_server_url)
     acme = ACME(directory_config)
 
