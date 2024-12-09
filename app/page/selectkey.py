@@ -112,9 +112,10 @@ class SelectYubiKeyPage(QWizardPage):
         )
 
     def on_yubikey_item_change(self):
-        # TODO on deselect, clear pin, disable auth button and set _pin_authenticated_signal to False
-
         selected_yubikey: Optional[YubikeyDetails] = self._find_selected_yubikey_details_from_widget()
+
+        if not selected_yubikey:
+            self._pin_authenticated = False
 
         # Pass none if nothing is selected
         self._pin_input_widget.toggle_input_field_ability(details=selected_yubikey)
@@ -155,4 +156,5 @@ class SelectYubiKeyPage(QWizardPage):
         self._pin_authenticated_signal.connect(self._on_yubikey_authentication)
 
     def cleanupPage(self) -> None:
+        self._pin_authenticated = False
         self.key_list_widget.clearSelection()

@@ -137,5 +137,6 @@ class YubiPinWidget(QWidget):
         self._input.setEnabled(on)
 
         # We don't want to always enable the auth button. Text has to be in there too.
-        if not on:
-            self._authenticate_button.setEnabled(False)
+        should_enable_auth_button: bool = on and self.get_value() != ""
+
+        self._authenticate_button.setEnabled(should_enable_auth_button)
