@@ -55,3 +55,25 @@ def test_with_key_on_page(qtbot: QtBot):
     assert serial == mock_token_info.serialNumber
 
     assert page._pin_input_widget._input.isEnabled() is False
+
+
+def test_select_key_on_page(qtbot: QtBot):
+    mock_token_info = CK_TOKEN_INFO()
+    mock_token_info.model = "key"
+    mock_token_info.serialNumber = "1234"
+    mock_token_info.label = "1234"
+
+    pkcs_wrapper = MagicMock()
+    pkcs_wrapper.pkcs11.getSlotList.return_value = ["123"]
+    pkcs_wrapper.pkcs11.getTokenInfo.return_value = mock_token_info
+
+    page = SelectYubiKeyPage(pkcs_wrapper)
+    qtbot.addWidget(page)
+
+    first_item = page.key_list_widget.item(0)
+    assert first_item is not None
+
+    with qtbot.waitSignal(page.key_list_widget.itemSelectionChanged):
+        page.key_list_widget.setCurrentRow(0)
+
+    assert page._pin_input_widget._input.isEnabled()

@@ -42,6 +42,7 @@ class SelectYubiKeyPage(QWizardPage):
 
     def _build_yubikey_list_widget(self, yubikeys: list[Any]) -> QListWidget:
         widget = QListWidget()
+        widget.itemSelectionChanged.connect(self.on_yubikey_item_change)
 
         for name, serial, available, slot in yubikeys:
             itemWidget = YubiKeyItemWidget(name, serial, available, slot)
@@ -145,11 +146,6 @@ class SelectYubiKeyPage(QWizardPage):
     def _on_yubikey_authentication(self, authenticated: bool):
         self._pin_authenticated = authenticated
         self.completeChanged.emit()
-
-    def initializePage(self) -> None:
-        super().initializePage()
-
-        self.key_list_widget.itemSelectionChanged.connect(self.on_yubikey_item_change)
 
     def cleanupPage(self) -> None:
         self._pin_authenticated = False
