@@ -32,7 +32,7 @@ class pkcs:
 
     pkcs11: PyKCS11.PyKCS11Lib
 
-    def __init__(self, pykcs11lib: PyKCS11.PyKCS11Lib, yubikey_pin: str):
+    def __init__(self, pykcs11lib: PyKCS11.PyKCS11Lib):
         self.pkcs11 = pykcs11lib
 
     def getusersession(self, slot, yubikey_pin: str):
