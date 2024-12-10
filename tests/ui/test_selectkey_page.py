@@ -131,9 +131,6 @@ def test_cleanup(qtbot: QtBot):
 
 
 def test_mock_next_page(qtbot: QtBot):
-    wizard = QWizard()
-    wizard_mock = MagicMock(return_value=wizard)
-
     mock_token_info = _create_sample_token_info()
 
     pkcs_wrapper = MagicMock()
@@ -141,11 +138,12 @@ def test_mock_next_page(qtbot: QtBot):
     pkcs_wrapper.pkcs11.getTokenInfo.return_value = mock_token_info
 
     page = SelectYubiKeyPage(pkcs_wrapper)
-    page.wizard = wizard_mock
-    qtbot.addWidget(page)
 
-    first_item = page.key_list_widget.item(0)
-    assert first_item is not None
+    wizard = QWizard()
+    wizard.addPage(page)
+
+    qtbot.addWidget(wizard)
+    assert page.key_list_widget.item(0) is not None
 
     with qtbot.waitSignal(page.key_list_widget.itemSelectionChanged):
         page.key_list_widget.setCurrentRow(0)
