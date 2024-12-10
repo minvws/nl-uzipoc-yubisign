@@ -76,7 +76,6 @@ def test_auth_pin_ok(qtbot: QtBot):
         "testkey",
         "123",
     )
-    # TODO mock the pkcs library to fake a login session
     pykcslib = MagicMock()
     pykcslib.getSlotList.return_value = [selected_key.slot]
     pykcslib.openSession.return_value.login.return_value = True
