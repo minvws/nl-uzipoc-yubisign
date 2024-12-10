@@ -10,6 +10,15 @@ from PyKCS11 import CK_TOKEN_INFO
 from app.page.yubikeyitem import YubiKeyItemWidget
 
 
+def _create_sample_token_info() -> CK_TOKEN_INFO:
+    info = CK_TOKEN_INFO()
+    info.model = "key"
+    info.serialNumber = "1234"
+    info.label = "1234"
+
+    return info
+
+
 def test_is_wizard_page(qtbot: QtBot):
     pkcs_wrapper = MagicMock()
 
@@ -30,11 +39,7 @@ def test_not_complete_yet(qtbot: QtBot):
 
 
 def test_with_key_on_page(qtbot: QtBot):
-    mock_token_info = CK_TOKEN_INFO()
-    mock_token_info.model = "key"
-    mock_token_info.serialNumber = "1234"
-    mock_token_info.label = "1234"
-
+    mock_token_info = _create_sample_token_info()
     pkcs_wrapper = MagicMock()
     pkcs_wrapper.pkcs11.getSlotList.return_value = ["123"]
     pkcs_wrapper.pkcs11.getTokenInfo.return_value = mock_token_info
@@ -58,10 +63,7 @@ def test_with_key_on_page(qtbot: QtBot):
 
 
 def test_select_key_on_page(qtbot: QtBot):
-    mock_token_info = CK_TOKEN_INFO()
-    mock_token_info.model = "key"
-    mock_token_info.serialNumber = "1234"
-    mock_token_info.label = "1234"
+    mock_token_info = _create_sample_token_info()
 
     pkcs_wrapper = MagicMock()
     pkcs_wrapper.pkcs11.getSlotList.return_value = ["123"]
