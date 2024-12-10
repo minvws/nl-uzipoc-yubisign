@@ -133,7 +133,7 @@ class SelectYubiKeyPage(QWizardPage):
         widget = self._find_selected_widget_item()
 
         # This should and can not happen, since we're disabling the button
-        if not widget:
+        if not widget or not self.isComplete():
             return super().nextId()
 
         # Store the selected YubiKey information in the wizard

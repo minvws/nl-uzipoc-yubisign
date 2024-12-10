@@ -3,7 +3,7 @@ from pytestqt.qtbot import QtBot
 
 from app.page.selectkey import SelectYubiKeyPage
 
-from PyQt6.QtWidgets import QWizardPage
+from PyQt6.QtWidgets import QWizardPage, QWizard
 
 from PyKCS11 import CK_TOKEN_INFO
 
@@ -128,3 +128,33 @@ def test_cleanup(qtbot: QtBot):
 
     assert page._pin_authenticated is False
     assert page.key_list_widget.selectedIndexes() == []
+
+
+def test_mock_next_page(qtbot: QtBot):
+    wizard = QWizard()
+    wizard_mock = MagicMock(return_value=wizard)
+
+    mock_token_info = _create_sample_token_info()
+
+    pkcs_wrapper = MagicMock()
+    pkcs_wrapper.pkcs11.getSlotList.return_value = ["123"]
+    pkcs_wrapper.pkcs11.getTokenInfo.return_value = mock_token_info
+
+    page = SelectYubiKeyPage(pkcs_wrapper)
+    page.wizard = wizard_mock
+    qtbot.addWidget(page)
+
+    first_item = page.key_list_widget.item(0)
+    assert first_item is not None
+
+    with qtbot.waitSignal(page.key_list_widget.itemSelectionChanged):
+        page.key_list_widget.setCurrentRow(0)
+
+    page._pin_authenticated = True
+    page.nextId()
+
+    pin = wizard.property("yubikey_pin")
+    details = wizard.property("selectedYubiKey")
+
+    assert pin == "123456"
+    assert details
