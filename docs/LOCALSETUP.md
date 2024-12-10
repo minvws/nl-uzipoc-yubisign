@@ -42,7 +42,6 @@ There are a few environmnent variables which need to be configured via the `.env
 |          Variable           |                         Default value                          | Type  |
 | :-------------------------: | :------------------------------------------------------------: | :---: |
 | `ACME_SERVER_DIRECTORY_URL` | `"https://acme.proeftuin.uzi-online.irealisatie.nl/directory"` | `str` |
-|        `YUBIKEY_PIN`        |                           `"123456"`                           | `str` |
 |  `OIDC_PROVIDER_BASE_URL`   |        `"https://proeftuin.uzi-online.irealisatie.nl"`         | `str` |
 
 The `ACME_SERVER_DIRECTORY_URL` should be set to the the directory URL of the ACME server. For example, this can be `http://localhost:8080/acme/directory` when working with the local ACME server developed by iRealisatie.

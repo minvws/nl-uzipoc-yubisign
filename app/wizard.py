@@ -57,12 +57,9 @@ if __name__ == "__main__":
     load_dotenv()
     app = QApplication(sys.argv)
 
-    yubikey_pin = getenv(
-        "YUBIKEY_PIN",
-    )
     # This will search default locations and fall back to the PYKCS11LIB environment variable
     pkcslib = PKCS11LibFinder().find()
-    pkcscls = pkcs(pykcs11lib=pkcslib, yubikey_pin=yubikey_pin)
+    pkcscls = pkcs(pykcs11lib=pkcslib)
 
     oidc_provider_url = urllib.parse.urlparse(getenv("OIDC_PROVIDER_BASE_URL", DEFAULT_PROEFTUIN_OIDC_LOGIN_URL))
     acme_ca_server_url = urllib.parse.urlparse(getenv("ACME_SERVER_DIRECTORY_URL", DEFAULT_ACME_CA_SERVER_URL))

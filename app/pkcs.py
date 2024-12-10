@@ -31,11 +31,9 @@ class pkcs:
     keys = {1: 1, 2: 2, 3: 3, 4: 4}
 
     pkcs11: PyKCS11.PyKCS11Lib
-    _yubikey_pin: str
 
     def __init__(self, pykcs11lib: PyKCS11.PyKCS11Lib, yubikey_pin: str):
         self.pkcs11 = pykcs11lib
-        self._yubikey_pin = yubikey_pin
 
     def getusersession(self, slot, yubikey_pin: str):
         print("User Open", slot)
