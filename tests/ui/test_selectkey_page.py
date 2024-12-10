@@ -29,7 +29,7 @@ def test_not_complete_yet(qtbot: QtBot):
     assert page.isComplete() is False
 
 
-def test_select_key_on_page(qtbot: QtBot):
+def test_with_key_on_page(qtbot: QtBot):
     mock_token_info = CK_TOKEN_INFO()
     mock_token_info.model = "key"
     mock_token_info.serialNumber = "1234"
@@ -53,3 +53,5 @@ def test_select_key_on_page(qtbot: QtBot):
     assert slot == "123"
     assert name == mock_token_info.model
     assert serial == mock_token_info.serialNumber
+
+    assert page._pin_input_widget._input.isEnabled() is False
