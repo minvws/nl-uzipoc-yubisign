@@ -141,7 +141,9 @@ class SelectYubiKeyPage(QWizardPage):
             "selectedYubiKey",
             widget.getYubiKeyDetails(),
         )
-        # TODO Set the PIN
+        pin = self._pin_input_widget.get_value()
+        self.wizard().setProperty("yubikey_pin", pin)
+
         return super().nextId()
 
     def _on_yubikey_authentication(self, authenticated: bool):
