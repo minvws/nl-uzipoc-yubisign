@@ -1,6 +1,10 @@
 # Local setup
+First clone this repository and checkout the `uzipoc_q4_2024` branch. You can then follow this document to set up and run the application.
 
-After cloning this repository, you can follow this document to set up and run the application.
+```bash
+git clone --single-branch --branch uzipoc_q4_2024 git@github.com:minvws/nl-uzipoc-yubisign.git
+```
+
 
 ## Requirements
 
@@ -9,14 +13,38 @@ This application requires the [`yubico-piv-tool`](https://developers.yubico.com/
 - **`python3.13`**: Make sure the executable is also accessible from your local terminal.
 - **`git`**: To update the application when needed.
 
+This application should be used with the [Yubikey 5C NFC]( https://www.yubico.com/nl/product/yubikey-5-series/yubikey-5c-nfc/).
+
+
+
+#### Windows specific
+> When installing Python on Windows, make sure to add `python.exe` to your PATH and disable path length limit during the installation.
+
+> The PIV tool can be installed via [this link](https://developers.yubico.com/yubico-piv-tool/Releases/).
+
+- Make sure you install Microsoft Visual C++ 14.0 or greater, installable via the [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/). Make sure these components are installed:
+  - Visual C++ Build tools core features.
+  - MSVC toolset C++ 2019 v142 (x86,x64)
+  - Visual C++ 2019 Redistributable Update
+  - Windows 10 SDK (10.0.17763.0) for Desktop C++
+- Make sure you have added the directory where the `libykcs11.dll` library is located to the system PATH. See [the documentation](https://developers.yubico.com/yubico-piv-tool/YKCS11/) for more information.
+
+
+
+
 ## Installation
 
 ### 1.1 Creating and activating a virtual environment
 
-To create an isolated environment where we can install the Python requirements in, use the below command to use the `venv` package.
+First, verify if the Python version was set to `3.13`
 
 ```bash
-python3.13 -m venv .venv
+python --version
+```
+Then to create an isolated environment where we can install the Python requirements in, use the below command to use the `venv` package.
+
+```bash
+python -m venv .venv
 ```
 
 For UNIX-based systems, the environment can be activated with the following command.
@@ -25,7 +53,7 @@ For UNIX-based systems, the environment can be activated with the following comm
 source .venv/bin/activate
 ```
 
-For Windows systems, this is `.\venv\Scripts\activate`.
+For Windows systems, this is `.\.venv\Scripts\activate`.
 
 ### 1.2 Installing the requirements
 
@@ -51,7 +79,7 @@ The `ACME_SERVER_DIRECTORY_URL` should be set to the the directory URL of the AC
 In the root of the project and the virtual environment activated, run the command below. Make sure you also have a Yubikey inserted in your computer.
 
 ```bash
-python3.13 -m app.wizard
+python -m app.wizard
 ```
 
 This will start up the application. Then, walk through the following steps:
