@@ -63,8 +63,8 @@ This will open up the initial screen, press continue.
 
 #### 2.2 Selecting the Yubikey
 
-This screen allows you to select a YubiKey. Select yours and click continue.
-![alt text](image-1.png)
+This screen allows you to select a YubiKey. Select yours, fill in the PIN code and click authorize. When this is successful, click the commit button.
+![alt text](yubikey-select.png)
 
 #### 2.3 Logging in
 
