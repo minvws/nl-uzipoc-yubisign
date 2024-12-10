@@ -5,7 +5,6 @@ from PyQt6.QtWidgets import (
     QListWidget,
     QListWidgetItem,
 )
-from PyQt6.QtCore import pyqtSignal
 
 from app.page.yubipin_widget import YubiPinWidget
 from app.yubikey_details import YubikeyDetails
@@ -24,8 +23,7 @@ class SelectYubiKeyPage(QWizardPage):
     key_list_widget: QListWidget
     _pin_input_widget: YubiPinWidget
 
-    # This will be called when the user has succesfully authenticated
-    _pin_authenticated_signal = pyqtSignal(bool)
+    # This will be set when the user has succesfully authenticated
     _pin_authenticated: bool
 
     def _prevent_backbutton_clicks(self):
@@ -67,7 +65,8 @@ class SelectYubiKeyPage(QWizardPage):
         layout = QVBoxLayout(self)
         layout.addWidget(yubikey_list_widget)
 
-        yubipin_widget = YubiPinWidget(pkcslib.pkcs11, self._pin_authenticated_signal)
+        yubipin_widget = YubiPinWidget(pkcslib.pkcs11)
+        yubipin_widget.pin_authenticated_signal.connect(self._on_yubikey_authentication)
         layout.addWidget(yubipin_widget)
 
         self.key_list_widget = yubikey_list_widget
@@ -151,7 +150,6 @@ class SelectYubiKeyPage(QWizardPage):
         super().initializePage()
 
         self.key_list_widget.itemSelectionChanged.connect(self.on_yubikey_item_change)
-        self._pin_authenticated_signal.connect(self._on_yubikey_authentication)
 
     def cleanupPage(self) -> None:
         self._pin_authenticated = False

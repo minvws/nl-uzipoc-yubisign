@@ -29,8 +29,8 @@ class YubiPinWidget(QWidget):
     # The lib used for authenticating
     _pykcs_lib: PyKCS11Lib
 
-    # This is being passed in
-    _pin_authenticated_signal: pyqtSignal
+    # This signal is conected from outside
+    pin_authenticated_signal = pyqtSignal(bool)
 
     def _build_label(self):
         label = QLabel("PIN")
@@ -83,12 +83,11 @@ class YubiPinWidget(QWidget):
         self._input = pin_input
         self._authenticate_button = button
 
-    def __init__(self, pykcs11lib: PyKCS11Lib, pin_authenticated_signal: pyqtSignal) -> None:
+    def __init__(self, pykcs11lib: PyKCS11Lib) -> None:
         super().__init__(None)
         self._setup_ui()
         self._pykcs_lib = pykcs11lib
         self._selected_yubikey = None
-        self._pin_authenticated_signal = pin_authenticated_signal
 
     def get_value(self) -> str:
         return self._input.text()
@@ -96,13 +95,13 @@ class YubiPinWidget(QWidget):
     def _notify_pin_ok(self):
         self._notification_text.setText("OK")
         self._notification_text.show()
-        self._pin_authenticated_signal.emit(True)
+        self.pin_authenticated_signal.emit(True)
 
     def _notify_pin_incorrect(self):
         self._notification_text.setText("PIN incorrect")
         self._notification_text.show()
 
-        self._pin_authenticated_signal.emit(False)
+        self.pin_authenticated_signal.emit(False)
 
     def _authenticate(self):
         if not self._selected_yubikey:
