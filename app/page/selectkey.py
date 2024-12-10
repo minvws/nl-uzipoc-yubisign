@@ -117,10 +117,6 @@ class SelectYubiKeyPage(QWizardPage):
 
         # Pass none if nothing is selected
         self._pin_input_widget.toggle_input_field_ability(details=selected_yubikey)
-
-        # The next button does not have to be enabled manually, just trigger the completion signal.
-        # This will re-check the isCompleted function
-        # https://doc.qt.io/qt-6/qwizardpage.html#completeChanged
         self.completeChanged.emit()
 
     def has_selection(self) -> bool:
