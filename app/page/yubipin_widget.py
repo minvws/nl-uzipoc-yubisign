@@ -106,7 +106,6 @@ class YubiPinWidget(QWidget):
     def _authenticate(self):
         if not self._selected_yubikey:
             return
-
         ok: bool = YubikeyPINAuthenticator(self._pykcs_lib).login(
             self._selected_yubikey,
             self.get_value(),
