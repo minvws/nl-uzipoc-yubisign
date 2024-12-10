@@ -79,3 +79,52 @@ def test_select_key_on_page(qtbot: QtBot):
         page.key_list_widget.setCurrentRow(0)
 
     assert page._pin_input_widget._input.isEnabled()
+
+
+def test_deselect(qtbot: QtBot):
+    mock_token_info = _create_sample_token_info()
+
+    pkcs_wrapper = MagicMock()
+    pkcs_wrapper.pkcs11.getSlotList.return_value = ["123"]
+    pkcs_wrapper.pkcs11.getTokenInfo.return_value = mock_token_info
+
+    page = SelectYubiKeyPage(pkcs_wrapper)
+    qtbot.addWidget(page)
+
+    first_item = page.key_list_widget.item(0)
+    assert first_item is not None
+
+    # First, select the item
+    with qtbot.waitSignal(page.key_list_widget.itemSelectionChanged):
+        page.key_list_widget.setCurrentRow(0)
+
+    assert page._pin_input_widget._input.isEnabled()
+
+    # Then de-select and assert
+    with qtbot.waitSignal(page.key_list_widget.itemSelectionChanged):
+        page.key_list_widget.clearSelection()
+
+    assert page._pin_input_widget._input.isEnabled() is False
+
+
+def test_cleanup(qtbot: QtBot):
+    mock_token_info = _create_sample_token_info()
+
+    pkcs_wrapper = MagicMock()
+    pkcs_wrapper.pkcs11.getSlotList.return_value = ["123"]
+    pkcs_wrapper.pkcs11.getTokenInfo.return_value = mock_token_info
+
+    page = SelectYubiKeyPage(pkcs_wrapper)
+    qtbot.addWidget(page)
+
+    first_item = page.key_list_widget.item(0)
+    assert first_item is not None
+
+    # First, select the item
+    with qtbot.waitSignal(page.key_list_widget.itemSelectionChanged):
+        page.key_list_widget.setCurrentRow(0)
+
+    page.cleanupPage()
+
+    assert page._pin_authenticated is False
+    assert page.key_list_widget.selectedIndexes() == []

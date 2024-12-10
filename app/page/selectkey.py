@@ -43,6 +43,7 @@ class SelectYubiKeyPage(QWizardPage):
     def _build_yubikey_list_widget(self, yubikeys: list[Any]) -> QListWidget:
         widget = QListWidget()
         widget.itemSelectionChanged.connect(self.on_yubikey_item_change)
+        widget.setSelectionMode(QListWidget.SelectionMode.SingleSelection)
 
         for name, serial, available, slot in yubikeys:
             itemWidget = YubiKeyItemWidget(name, serial, available, slot)
@@ -140,7 +141,7 @@ class SelectYubiKeyPage(QWizardPage):
             "selectedYubiKey",
             widget.getYubiKeyDetails(),
         )
-        # Should we set the PIN here?
+        # TODO Set the PIN
         return super().nextId()
 
     def _on_yubikey_authentication(self, authenticated: bool):
