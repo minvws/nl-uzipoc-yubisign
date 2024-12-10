@@ -14,19 +14,24 @@ class RequestCertificatePage(QWizardPage):
     def initializePage(self):
         QTimer.singleShot(500, self.natimer)
 
+    def _get_yubikey_pin(self) -> str:
+        return self.wizard().property("yubikey_pin")
+
     def natimer(self):
         self.setTitle("Request Certificate")
         layout = QVBoxLayout(self)
         label = QLabel("Certificate Requests")
         layout.addWidget(label)
         selectedYubiKeySlot, _, _ = self.wizard().property("selectedYubiKey")
+        yubikey_pin = self._get_yubikey_pin()
+
         jwttoken = self.wizard().property("jwt_token")()
         f9crt = self.pkcs.getf9(selectedYubiKeySlot)
         for keynum in [4, 3, 2, 1]:
             hwattest = self.pkcs.getattest(selectedYubiKeySlot, keynum)
             self.acme.send_request(hwattest, jwttoken, keynum - 1, f9crt)
             self.acme.wait(keynum - 1)
-            csr = self.pkcs.getcsr(selectedYubiKeySlot, keynum)
+            csr = self.pkcs.getcsr(selectedYubiKeySlot, keynum, yubikey_pin)
             cert = self.acme.final(keynum, csr, jwttoken)
             self.pkcs.savecert(selectedYubiKeySlot, keynum, cert)
         self.wizard().next()  # Programmatically trigger the Next button

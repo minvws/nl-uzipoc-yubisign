@@ -37,11 +37,11 @@ class pkcs:
         self.pkcs11 = pykcs11lib
         self._yubikey_pin = yubikey_pin
 
-    def getusersession(self, slot):
+    def getusersession(self, slot, yubikey_pin: str):
         print("User Open", slot)
         if slot not in self.sessions:
             self.sessions[slot] = self.pkcs11.openSession(slot)
-            self.sessions[slot].login(self._yubikey_pin)
+            self.sessions[slot].login(yubikey_pin)
         return self.sessions[slot]
 
     def getsession(self, slot):
@@ -208,9 +208,9 @@ class pkcs:
         )
         return csr.dump()
 
-    def getcsr(self, slot, keyid):
+    def getcsr(self, slot, keyid, yubikey_pin: str):
         csr = None
-        session = self.getusersession(slot)
+        session = self.getusersession(slot, yubikey_pin)
         privkey = session.findObjects([(PyKCS11.CKA_CLASS, PyKCS11.CKO_PRIVATE_KEY), (PyKCS11.CKA_ID, [keyid])])
         pubkey = session.findObjects([(PyKCS11.CKA_CLASS, PyKCS11.CKO_PUBLIC_KEY), (PyKCS11.CKA_ID, [keyid])])
         if privkey and pubkey:
