@@ -16,6 +16,8 @@ class CreateRSAKeysPage(QWizardPage):
     yubiKeyInfoLabel: QLabel
     progressLabel: QLabel
 
+    _selected_yubikey: tuple[str, str, str]
+
     def _build_checkbox(self) -> QCheckBox:
         checkbox = QCheckBox("I understand that the YubiKey will be emptied")
         checkbox.setStyleSheet("color: red")
@@ -39,11 +41,13 @@ class CreateRSAKeysPage(QWizardPage):
         self.progressLabel = QLabel("Key creation progress will be displayed here.")
         layout.addWidget(self.progressLabel)
 
-        self.yubiKeyInfoLabel = QLabel("YubiKey information will be displayed here.")
+        self.yubiKeyInfoLabel.setText(f"YubiKey Selected: {self._selected_yubikey}")
         layout.addWidget(self.yubiKeyInfoLabel)
 
     def __init__(self, mypkcs, parent=None):
         super().__init__(parent)
+
+        self._selected_yubikey = self.wizard().property("selectedYubiKey")
         self._setup_ui()
 
         self._key_creation_called = False
@@ -57,17 +61,16 @@ class CreateRSAKeysPage(QWizardPage):
         os.system("ykman piv reset --force")
 
     def nextId(self):
-        print("**   nextID called", self.stepsCompleted, self._key_creation_called)
         if self._key_creation_called and not self.stepsCompleted:
             return self.wizard().currentId()
 
-        if self.stepsCompleted:
-            print("Completed")
-            return super().nextId()
+        # If the YubiKey is filled and the checkbox is not checked, do not proceed
+        # This should not happen, since the button can't be clicked
         if self.is_selected_yubikey_filled() and not self.emptyWarningCheckbox.isChecked():
-            # If the YubiKey is filled and the checkbox is not checked, do not proceed
-            print("Not Completed 0")
             return self.wizard().currentId()
+
+        if self.stepsCompleted:
+            return super().nextId()
 
         if self.is_selected_yubikey_filled():
             # Decide whether we want this, because if this resets the PIN?
@@ -78,7 +81,6 @@ class CreateRSAKeysPage(QWizardPage):
         QTimer.singleShot(1000, self.startKeyCreationProcess)
 
         self._key_creation_called = True
-        print("Completed -1")
 
         current_page_id = self.wizard().currentId()
         return current_page_id
@@ -115,7 +117,7 @@ class CreateRSAKeysPage(QWizardPage):
             return
 
         self.progressLabel.setText(f"Creating key {self.currentStep} of {self.totalSteps}...")
-        selectedYubiKeySlot, _, _ = self.wizard().property("selectedYubiKey")
+        selectedYubiKeySlot, _, _ = self._selected_yubikey
         worker = Worker(self.pkcs, self.currentStep, selectedYubiKeySlot)
         worker.finished.connect(self.finishCurrentStep)
         worker.run()
@@ -137,9 +139,7 @@ class CreateRSAKeysPage(QWizardPage):
             self.wizard().next()
 
     def initializePage(self):
-        selectedYubiKey = self.wizard().property("selectedYubiKey")
-        self.yubiKeyInfoLabel.setText(f"YubiKey Selected: {selectedYubiKey}")
-        self.pkcs.listattest(selectedYubiKey[0])
+        self.pkcs.listattest(self._selected_yubikey[0])
 
     def is_selected_yubikey_filled(self) -> bool:
         finds = {x: {y: False for y in range(3)} for x in range(4)}
@@ -159,7 +159,7 @@ class CreateRSAKeysPage(QWizardPage):
             "Card Authentication": " 9e",
         }
 
-        selectedYubiKeySlot, _, _ = self.wizard().property("selectedYubiKey")
+        selectedYubiKeySlot, _, _ = self._selected_yubikey
         session = self.pkcs.getsession(selectedYubiKeySlot)
         for col, cko_type in enumerate(
             [
