@@ -38,8 +38,6 @@ class MainWindow(QWizard):
         self.setWindowTitle("YubiKey Wizard")
         self.resize(1024, 768)
 
-        # Create the wizard
-        # self.wizard = QWizard()
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.addPage(WelcomePage())
         self.addPage(SelectYubiKeyPage(mypkcs))
@@ -47,13 +45,9 @@ class MainWindow(QWizard):
         self.addPage(LoginWithDigiDPage(myacme, oidc_provider_base_url))
         self.addPage(RequestCertificatePage(mypkcs, myacme))
         self.addPage(SaveToYubiKeyPage(mypkcs))
-        self.setWindowTitle("YubiKey Wizard")
 
         # When the wizard has finished, close the application
         self.finished.connect(QApplication.instance().quit)
-
-        # Set the wizard as the central widget of the main window
-        # self.setCentralWidget(self.wizard)
 
 
 if __name__ == "__main__":
