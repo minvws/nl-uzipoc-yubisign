@@ -31,7 +31,7 @@ DEFAULT_YUBIKEY_PIN = "123456"
 DEFAULT_PROEFTUIN_OIDC_LOGIN_URL = "https://proeftuin.uzi-online.irealisatie.nl"
 
 
-class MainWindow(QMainWindow):
+class MainWindow(QWizard):
     def __init__(self, mypkcs, myacme, oidc_provider_base_url: urllib.parse.ParseResult):
         super().__init__()
 
@@ -39,21 +39,21 @@ class MainWindow(QMainWindow):
         self.resize(1024, 768)
 
         # Create the wizard
-        self.wizard = QWizard()
-        self.wizard.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        self.wizard.addPage(WelcomePage())
-        self.wizard.addPage(SelectYubiKeyPage(mypkcs))
-        self.wizard.addPage(CreateRSAKeysPage(mypkcs))
-        self.wizard.addPage(LoginWithDigiDPage(myacme, oidc_provider_base_url))
-        self.wizard.addPage(RequestCertificatePage(mypkcs, myacme))
-        self.wizard.addPage(SaveToYubiKeyPage(mypkcs))
-        self.wizard.setWindowTitle("YubiKey Wizard")
+        # self.wizard = QWizard()
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.addPage(WelcomePage())
+        self.addPage(SelectYubiKeyPage(mypkcs))
+        self.addPage(CreateRSAKeysPage(mypkcs))
+        self.addPage(LoginWithDigiDPage(myacme, oidc_provider_base_url))
+        self.addPage(RequestCertificatePage(mypkcs, myacme))
+        self.addPage(SaveToYubiKeyPage(mypkcs))
+        self.setWindowTitle("YubiKey Wizard")
 
         # When the wizard has finished, close the application
-        self.wizard.finished.connect(QApplication.instance().quit)
+        self.finished.connect(QApplication.instance().quit)
 
         # Set the wizard as the central widget of the main window
-        self.setCentralWidget(self.wizard)
+        # self.setCentralWidget(self.wizard)
 
 
 if __name__ == "__main__":
