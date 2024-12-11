@@ -1,4 +1,3 @@
-import os
 from PyQt6.QtWidgets import QWizardPage, QVBoxLayout, QCheckBox, QLabel, QWizard
 from PyQt6.QtCore import QTimer
 import PyKCS11
