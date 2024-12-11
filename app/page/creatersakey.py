@@ -8,7 +8,9 @@ from .worker import Worker
 class CreateRSAKeysPage(QWizardPage):
     currentStep = 0
     totalSteps = 0
-    alreadycalled = None
+
+    _key_creation_called: bool
+    _accepted_risks: bool
 
     emptyWarningCheckbox: QCheckBox
     yubiKeyInfoLabel: QLabel
@@ -17,7 +19,12 @@ class CreateRSAKeysPage(QWizardPage):
     def _build_checkbox(self) -> QCheckBox:
         checkbox = QCheckBox("I understand that the YubiKey will be emptied")
         checkbox.setStyleSheet("color: red")
-        checkbox.toggled.connect(self.updateNextButtonStatus)
+        checkbox.toggled.connect(self._on_checkbox_toggle)
+
+        if self.is_selected_yubikey_filled():
+            checkbox.show()
+        else:
+            checkbox.hide()
 
         return checkbox
 
@@ -39,6 +46,9 @@ class CreateRSAKeysPage(QWizardPage):
         super().__init__(parent)
         self._setup_ui()
 
+        self._key_creation_called = False
+        self._accepted_risks = False
+
         self.stepsCompleted = False
         self.pkcs = mypkcs
         self.threads = []
@@ -47,8 +57,8 @@ class CreateRSAKeysPage(QWizardPage):
         os.system("ykman piv reset --force")
 
     def nextId(self):
-        print("**   nextID called", self.stepsCompleted, self.alreadycalled)
-        if self.alreadycalled and not self.stepsCompleted:
+        print("**   nextID called", self.stepsCompleted, self._key_creation_called)
+        if self._key_creation_called and not self.stepsCompleted:
             return self.wizard().currentId()
 
         if self.stepsCompleted:
@@ -67,22 +77,32 @@ class CreateRSAKeysPage(QWizardPage):
         # Start the key creation process
         QTimer.singleShot(1000, self.startKeyCreationProcess)
 
-        self.alreadycalled = True
+        self._key_creation_called = True
         print("Completed -1")
 
         current_page_id = self.wizard().currentId()
         return current_page_id
 
     def isComplete(self):
-        if self.alreadycalled and not self.stepsCompleted:
+        # This is the first step and the first time the user should click on continue
+        if not self._accepted_risks:
             return False
+
+        # When the keys are being created (TODO can this be only one condition?)
+        if self._key_creation_called and not self.stepsCompleted:
+            return False
+
         return True
 
     def startKeyCreationProcess(self):
+        self._key_creation_called = True
+
         self.currentStep = 1
         self.totalSteps = 4
         self.stepsCompleted = False
         self.updateProgress()
+
+        self.completeChanged.emit()
 
     def updateProgress(self):
         print(f"Creating key {self.currentStep} of {self.totalSteps}...")
@@ -93,13 +113,13 @@ class CreateRSAKeysPage(QWizardPage):
                 self.stepsCompleted = True
                 self.completeKeyCreationProcess()
             return
+
         self.progressLabel.setText(f"Creating key {self.currentStep} of {self.totalSteps}...")
         selectedYubiKeySlot, _, _ = self.wizard().property("selectedYubiKey")
         worker = Worker(self.pkcs, self.currentStep, selectedYubiKeySlot)
         worker.finished.connect(self.finishCurrentStep)
         worker.run()
         print("Worker", self.currentStep)
-        # self.finishCurrentStep()
 
     def finishCurrentStep(self):
         print("Called, should be finished")
@@ -114,22 +134,12 @@ class CreateRSAKeysPage(QWizardPage):
 
     def completeKeyCreationProcess(self):
         if self.stepsCompleted:
-            self.wizard().next()  # Programmatically trigger the Next button
+            self.wizard().next()
 
     def initializePage(self):
-        self.alreadycalled = False
         selectedYubiKey = self.wizard().property("selectedYubiKey")
         self.yubiKeyInfoLabel.setText(f"YubiKey Selected: {selectedYubiKey}")
         self.pkcs.listattest(selectedYubiKey[0])
-
-        yubiKeyFilled = self.is_selected_yubikey_filled()
-
-        if yubiKeyFilled:
-            self.emptyWarningCheckbox.show()
-        else:
-            self.emptyWarningCheckbox.hide()
-
-        self.updateNextButtonStatus()
 
     def is_selected_yubikey_filled(self) -> bool:
         finds = {x: {y: False for y in range(3)} for x in range(4)}
@@ -173,7 +183,6 @@ class CreateRSAKeysPage(QWizardPage):
         print(finds)
         return any(value for inner_dict in finds.values() for value in inner_dict.values())
 
-    def updateNextButtonStatus(self):
-        yubiKeyFilled = self.is_selected_yubikey_filled()
-        checkboxChecked = self.emptyWarningCheckbox.isChecked()
-        self.wizard().button(QWizard.WizardButton.NextButton).setEnabled(not yubiKeyFilled or checkboxChecked)
+    def _on_checkbox_toggle(self):
+        self._accepted_risks = self.emptyWarningCheckbox.isChecked()
+        self.completeChanged.emit()
