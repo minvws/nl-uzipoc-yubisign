@@ -1,8 +1,7 @@
-import os
 from PyQt6.QtWidgets import QWizardPage, QVBoxLayout, QCheckBox, QLabel, QWizard
 from PyQt6.QtCore import QTimer
-import PyKCS11
 
+from app.yubikey_content_checker import YubikeyContentChecker
 from app.yubikey_details import YubikeyDetails
 from app.yubikey_piv_resetter import YubiKeyPIVResetter
 from .worker import Worker
@@ -51,13 +50,13 @@ class CreateRSAKeysPage(QWizardPage):
             print("Completed")
             return super().nextId()
 
-        if self.checkIfYubiKeyFilled() and not self.emptyWarningCheckbox.isChecked():
+        if self._yubikey_filled() and not self.emptyWarningCheckbox.isChecked():
             # If the YubiKey is filled and the checkbox is not checked, do not proceed
             print("Not Completed 0")
             return self.wizard().currentId()
 
         # When the initial process starts, reset the key
-        if self.checkIfYubiKeyFilled():
+        if self._yubikey_filled():
             YubiKeyPIVResetter().reset(self._selected_yubikey)
 
         QTimer.singleShot(1000, self.startKeyCreationProcess)
@@ -116,7 +115,7 @@ class CreateRSAKeysPage(QWizardPage):
         self.pkcs.listattest(selectedYubiKey[0])
         # self.pkcs.listprivatekeys(selectedYubiKey[0])
 
-        yubiKeyFilled = self.checkIfYubiKeyFilled()
+        yubiKeyFilled = self._yubikey_filled()
         self.wizard().button(QWizard.WizardButton.NextButton).setEnabled(False)
         if yubiKeyFilled:
             self.emptyWarningCheckbox.show()
@@ -125,49 +124,10 @@ class CreateRSAKeysPage(QWizardPage):
             self.wizard().button(QWizard.WizardButton.NextButton).setEnabled(True)
         self.updateNextButtonStatus()
 
-    def checkIfYubiKeyFilled(self):
-        finds = {x: {y: False for y in range(3)} for x in range(4)}
-
-        HEADERS = [
-            "X.509 Certificate",
-            "Public key",
-            "Private key",
-            "PIV Attestation",
-            "UZI Certificate",
-        ]
-
-        LABEL_MAPPING = {
-            "PIV Authentication": " 9a",
-            "Digital Signature": " 9c",
-            "Key Management": "9d",
-            "Card Authentication": " 9e",
-        }
-        selectedYubiKeySlot = self._selected_yubikey.slot
-
-        session = self.pkcs.getsession(selectedYubiKeySlot)
-        for col, cko_type in enumerate(
-            [
-                PyKCS11.CKO_CERTIFICATE,
-                PyKCS11.CKO_PUBLIC_KEY,
-                PyKCS11.CKO_PRIVATE_KEY,
-                PyKCS11.CKO_CERTIFICATE,
-            ]
-        ):
-            all_objects = session.findObjects([(PyKCS11.CKA_CLASS, cko_type)])
-            for row, (x, y) in enumerate(LABEL_MAPPING.items()):
-                for obj in all_objects:
-                    label = session.getAttributeValue(obj, [PyKCS11.CKA_LABEL])[0]
-                    if label == HEADERS[col] + " for " + x and col < 3:
-                        finds[col][row] = True
-                        break
-                    if label == "X.509 Certificate for PIV Attestation" + y and col == 3:
-                        finds[col][row] = True
-                        break
-        self.pkcs.delsession(selectedYubiKeySlot)
-        print(finds)
-        return any(value for inner_dict in finds.values() for value in inner_dict.values())
+    def _yubikey_filled(self):
+        return YubikeyContentChecker().check(self._selected_yubikey)
 
     def updateNextButtonStatus(self):
-        yubiKeyFilled = self.checkIfYubiKeyFilled()
+        yubiKeyFilled = self._yubikey_filled()
         checkboxChecked = self.emptyWarningCheckbox.isChecked()
         self.wizard().button(QWizard.WizardButton.NextButton).setEnabled(not yubiKeyFilled or checkboxChecked)
