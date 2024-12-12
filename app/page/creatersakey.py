@@ -56,22 +56,21 @@ class CreateRSAKeysPage(QWizardPage):
         self.threads = []
 
     def nextId(self):
+        # This should not happen since the isComplete didn't become true yets
+        if self._yubikey_filled() and not self._accepted_risks():
+            return self.wizard().currentId()
+
         if self._key_creation_started and not self._keys_created:
             return self.wizard().currentId()
 
         if self._keys_created:
             return super().nextId()
 
-        # This should not happen since the isComplete didn't become true yets
-        if self._yubikey_filled() and not self._warning_checkbox.isChecked():
-            return self.wizard().currentId()
-
         # When the initial process starts, reset the key
         if self._yubikey_filled():
             YubiKeyPIVResetter().reset(self._selected_yubikey)
 
-        QTimer.singleShot(1000, self.startKeyCreationProcess)
-        self._key_creation_started = True
+        self.start_key_creation()
 
         return self.wizard().currentId()
 
@@ -87,7 +86,7 @@ class CreateRSAKeysPage(QWizardPage):
 
         return True
 
-    def startKeyCreationProcess(self):
+    def start_key_creation(self):
         self._key_creation_started = True
 
         # Emit the signal so the button will get disabled
@@ -107,8 +106,8 @@ class CreateRSAKeysPage(QWizardPage):
                 self.completeKeyCreationProcess()
             return
         self.progressLabel.setText(f"Creating key {self.currentStep} of {self.totalSteps}...")
-        selectedYubiKeySlot, _, _ = self.wizard().property("selectedYubiKey")
-        worker = Worker(self.pkcs, self.currentStep, selectedYubiKeySlot)
+
+        worker = Worker(self.pkcs, self.currentStep, self._selected_yubikey.slot)
         worker.finished.connect(self.finishCurrentStep)
         worker.run()
         print("Worker", self.currentStep)
