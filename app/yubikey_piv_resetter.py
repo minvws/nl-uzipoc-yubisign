@@ -1,6 +1,9 @@
+import logging
 from subprocess import CompletedProcess
 from app.yubikey_details import YubikeyDetails
 import subprocess
+
+logger = logging.getLogger()
 
 
 class YubiKeyPIVResetter:
@@ -20,8 +23,7 @@ class YubiKeyPIVResetter:
     def _run_reset(self, yubikey_serial: str) -> CompletedProcess:
         cmdargs = [
             "ykman",
-            # We need the extra space for the command to work
-            f"--device={yubikey_serial} ",
+            f"--device={yubikey_serial} ",  # We need the extra space for the command to work
             "piv",
             "reset",
             "--force",
@@ -38,12 +40,26 @@ class YubiKeyPIVResetter:
         if "ERROR: Failed connecting to a YubiKey with serial:" in decoded:
             raise Exception("Selected Yubikey could not be found.")
 
-    def reset(self, yubikey: YubikeyDetails) -> bool:
-        result: CompletedProcess = self._run_reset(yubikey.serial)
+    def _log_result(self, resetted: bool):
+        if resetted:
+            logger.info("Yubikey successfully resetted")
 
-        # What's the return code? Can we work with that
+    def reset(self, yubikey: YubikeyDetails) -> bool:
+        logger.info(
+            f"Resetting the PIV module for Yubikey with serial {yubikey.serial}...",
+        )
+        result: CompletedProcess = self._run_reset(yubikey.serial)
         self._validate_cmd_result(result)
 
         ok = self._is_complete(result)
+
+        if not ok:
+            logger.warning(
+                "Yubikey was not reset.",
+            )
+        else:
+            logger.info(
+                f"Yubikey with serial {yubikey.serial} was successfully reset",
+            )
 
         return ok

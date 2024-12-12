@@ -25,3 +25,15 @@ def test_ykman_empty_result(run_mock: MagicMock):
         YubiKeyPIVResetter().reset(details)
 
     assert str(exc.value) == "The command returned an empty string"
+
+
+@patch("app.yubikey_piv_resetter.subprocess.run")
+def test_ykman_runs_ok(run_mock: MagicMock):
+    run_mock.return_value.stdout.decode.return_value = (
+        "Resetting PIV data...\nReset complete. All PIV data has been cleared from the YubiKey."
+    )
+
+    details = YubikeyDetails("1", "30631123", "123")
+    result = YubiKeyPIVResetter().reset(details)
+
+    assert result is True
