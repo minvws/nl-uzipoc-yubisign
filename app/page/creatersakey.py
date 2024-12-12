@@ -41,18 +41,14 @@ class CreateRSAKeysPage(QWizardPage):
         self.threads = []  # Keep track of threads
 
     def nextId(self):
-        self.wizard().button(QWizard.WizardButton.NextButton).setEnabled(False)
-        print("**   nextID called", self.stepsCompleted, self.alreadycalled)
         if self.alreadycalled and not self.stepsCompleted:
             return self.wizard().currentId()
 
         if self.stepsCompleted:
-            print("Completed")
             return super().nextId()
 
+        # This should not happen since the isComplete didn't become true yets
         if self._yubikey_filled() and not self.emptyWarningCheckbox.isChecked():
-            # If the YubiKey is filled and the checkbox is not checked, do not proceed
-            print("Not Completed 0")
             return self.wizard().currentId()
 
         # When the initial process starts, reset the key
@@ -61,7 +57,6 @@ class CreateRSAKeysPage(QWizardPage):
 
         QTimer.singleShot(1000, self.startKeyCreationProcess)
         self.alreadycalled = True
-        print("Completed -1")
 
         return self.wizard().currentId()
 
@@ -125,7 +120,7 @@ class CreateRSAKeysPage(QWizardPage):
         self.updateNextButtonStatus()
 
     def _yubikey_filled(self):
-        return YubikeyContentChecker().check(self._selected_yubikey)
+        return YubikeyContentChecker(self.pkcs).check(self._selected_yubikey)
 
     def updateNextButtonStatus(self):
         yubiKeyFilled = self._yubikey_filled()
