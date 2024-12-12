@@ -1,10 +1,10 @@
 # PoC with Yubikey
 
-In order to automate certificate issuance for UZI, a PoC was done with a YubiKey and an ACME server. The keypairs are generated on the YubiKey and the certificate is issued by the ACME server. This document will give you an high overview.
+In order to automate certificate issuance for UZI, a PoC was done with a YubiKey and an ACME server. The keypairs are generated on the YubiKey and the certificate is issued by the ACME server. This program is designed to start with a _new_ YubiKey, meaning it should have the default PIN. This document will give you an high overview.
 
 ### Steps
 
-- The YubiKey is reset: all the certificates on the device will be removed.
+- The YubiKey is reset: all the certificates on the device will be removed and the PIN code will be reset.
 - We will generate 4 public and private key pairs on the YubiKey. These are for PIV Authentication, Digital Signature, Key Management and Card Authentication. Next to that, the YubiKey will generate additional attestation certificates, to prove that the private key is generated on the YubiKey itself. The private keys will always remain in the YubiKey.
 - The user logs in via the chosen [authentication flow](./AUTH_FLOW.md). This returns an JWT, containing the user information.
 - Per generated key pair, an certificate signing request (CSR) is created and signed by the private key.
