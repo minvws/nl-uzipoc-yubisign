@@ -10,7 +10,10 @@ from .worker import Worker
 class CreateRSAKeysPage(QWizardPage):
     currentStep = 0
     totalSteps = 0
-    alreadycalled = None
+
+    # Maybe we can use an enum for these fields
+    _key_creation_started: bool
+    _keys_created: bool
 
     _selected_yubikey: YubikeyDetails
 
@@ -47,15 +50,16 @@ class CreateRSAKeysPage(QWizardPage):
         super().__init__(parent)
         self._setup_ui()
 
-        self.stepsCompleted = False
+        self._key_creation_started = False
+        self._keys_created = False
         self.pkcs = mypkcs
         self.threads = []
 
     def nextId(self):
-        if self.alreadycalled and not self.stepsCompleted:
+        if self._key_creation_started and not self._keys_created:
             return self.wizard().currentId()
 
-        if self.stepsCompleted:
+        if self._keys_created:
             return super().nextId()
 
         # This should not happen since the isComplete didn't become true yets
@@ -67,7 +71,7 @@ class CreateRSAKeysPage(QWizardPage):
             YubiKeyPIVResetter().reset(self._selected_yubikey)
 
         QTimer.singleShot(1000, self.startKeyCreationProcess)
-        self.alreadycalled = True
+        self._key_creation_started = True
 
         return self.wizard().currentId()
 
@@ -78,28 +82,28 @@ class CreateRSAKeysPage(QWizardPage):
         if not self._accepted_risks():
             return False
 
-        # This should be sufficient for when the process of creating keys has been called
-        if self.alreadycalled and not self.stepsCompleted:
+        if self._key_creation_started and not self._keys_created:
             return False
 
         return True
 
     def startKeyCreationProcess(self):
+        self._key_creation_started = True
+
         # Emit the signal so the button will get disabled
         self.completeChanged.emit()
 
         self.currentStep = 1
         self.totalSteps = 4
-        self.stepsCompleted = False
         self.updateProgress()
 
     def updateProgress(self):
         print(f"Creating key {self.currentStep} of {self.totalSteps}...")
         if self.currentStep > self.totalSteps:
             print("Alles gedaan")
-            if not self.stepsCompleted:
+            if not self._keys_created:
                 self.progressLabel.setText("All keys created.")
-                self.stepsCompleted = True
+                self._keys_created = True
                 self.completeKeyCreationProcess()
             return
         self.progressLabel.setText(f"Creating key {self.currentStep} of {self.totalSteps}...")
@@ -121,13 +125,12 @@ class CreateRSAKeysPage(QWizardPage):
             QTimer.singleShot(500, self.updateProgress)
 
     def completeKeyCreationProcess(self):
-        if self.stepsCompleted:
+        if self._keys_created:
             self.wizard().next()
 
     def initializePage(self):
         self._set_yelected_yubikey()
 
-        self.alreadycalled = False
         self.yubiKeyInfoLabel.setText(f"YubiKey Selected: {self._selected_yubikey.serial}")
         self.pkcs.listattest(self._selected_yubikey.slot)
 
