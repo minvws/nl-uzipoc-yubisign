@@ -4,6 +4,7 @@ from PyQt6.QtCore import QTimer
 import PyKCS11
 
 from app.yubikey_details import YubikeyDetails
+from app.yubikey_piv_resetter import YubiKeyPIVResetter
 from .worker import Worker
 
 
@@ -45,9 +46,11 @@ class CreateRSAKeysPage(QWizardPage):
         print("**   nextID called", self.stepsCompleted, self.alreadycalled)
         if self.alreadycalled and not self.stepsCompleted:
             return self.wizard().currentId()
+
         if self.stepsCompleted:
             print("Completed")
             return super().nextId()
+
         if self.checkIfYubiKeyFilled() and not self.emptyWarningCheckbox.isChecked():
             # If the YubiKey is filled and the checkbox is not checked, do not proceed
             print("Not Completed 0")
@@ -55,13 +58,13 @@ class CreateRSAKeysPage(QWizardPage):
 
         # When the initial process starts, reset the key
         if self.checkIfYubiKeyFilled():
-            os.system("ykman piv reset --force")
+            YubiKeyPIVResetter().reset(self._selected_yubikey)
 
-        # Start the key creation process
         QTimer.singleShot(1000, self.startKeyCreationProcess)
         self.alreadycalled = True
         print("Completed -1")
-        return self.wizard().currentId()  # Stay on the current page
+
+        return self.wizard().currentId()
 
     def isComplete(self):
         if self.alreadycalled and not self.stepsCompleted:
