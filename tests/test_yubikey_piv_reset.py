@@ -9,10 +9,19 @@ def test_yubikey_reset_not_found(run_mock: MagicMock):
     run_mock.return_value.stdout.decode.return_value = "ERROR: Failed connecting to a YubiKey with serial: 1"
 
     details = YubikeyDetails("1", "1", "123")
-
-    r = YubiKeyPIVResetter()
-
     with pytest.raises(Exception) as exc:
-        r.reset(details)
+        YubiKeyPIVResetter().reset(details)
 
     assert str(exc.value) == "Selected Yubikey could not be found."
+
+
+@patch("app.yubikey_piv_resetter.subprocess.run")
+def test_ykman_empty_result(run_mock: MagicMock):
+    run_mock.return_value.stdout.decode.return_value = ""
+
+    details = YubikeyDetails("1", "1", "123")
+
+    with pytest.raises(Exception) as exc:
+        YubiKeyPIVResetter().reset(details)
+
+    assert str(exc.value) == "The command returned an empty string"
