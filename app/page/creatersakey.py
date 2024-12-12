@@ -47,7 +47,7 @@ class CreateRSAKeysPage(QWizardPage):
 
         self.stepsCompleted = False
         self.pkcs = mypkcs
-        self.threads = []  # Keep track of threads
+        self.threads = []
 
     def nextId(self):
         if self.alreadycalled and not self.stepsCompleted:
