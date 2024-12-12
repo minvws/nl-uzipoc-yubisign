@@ -18,22 +18,32 @@ class CreateRSAKeysPage(QWizardPage):
         slot, name, serial = self.wizard().property("selectedYubiKey")
         self._selected_yubikey = YubikeyDetails(slot=slot, name=name, serial=serial.strip())
 
-    def __init__(self, mypkcs, parent=None):
-        super().__init__(parent)
+    def _build_checkbox(self):
+        checkbox = QCheckBox("I understand that the YubiKey will be emptied")
+        checkbox.hide()
+        checkbox.setStyleSheet("color: red")
+        checkbox.toggled.connect(self.updateNextButtonStatus)
+
+        return checkbox
+
+    def _setup_ui(self):
         self.setTitle("Create RSA Keys")
 
         layout = QVBoxLayout(self)
 
-        self.emptyWarningCheckbox = QCheckBox("I understand that the YubiKey will be emptied")
-        self.emptyWarningCheckbox.setStyleSheet("color: red")
-        self.emptyWarningCheckbox.toggled.connect(self.updateNextButtonStatus)
-        layout.addWidget(self.emptyWarningCheckbox)
+        checkbox = self._build_checkbox()
+        layout.addWidget(checkbox)
+        self.emptyWarningCheckbox = checkbox
 
         self.progressLabel = QLabel("Key creation progress will be displayed here.")
         layout.addWidget(self.progressLabel)
 
         self.yubiKeyInfoLabel = QLabel("YubiKey information will be displayed here.")
         layout.addWidget(self.yubiKeyInfoLabel)
+
+    def __init__(self, mypkcs, parent=None):
+        super().__init__(parent)
+        self._setup_ui()
 
         self.stepsCompleted = False
         self.pkcs = mypkcs
@@ -100,7 +110,7 @@ class CreateRSAKeysPage(QWizardPage):
 
     def completeKeyCreationProcess(self):
         if self.stepsCompleted:
-            self.wizard().next()  # Programmatically trigger the Next button
+            self.wizard().next()
 
     def initializePage(self):
         self._set_yelected_yubikey()
@@ -109,13 +119,12 @@ class CreateRSAKeysPage(QWizardPage):
         self.yubiKeyInfoLabel.setText(f"YubiKey Selected: {self._selected_yubikey.serial}")
         self.pkcs.listattest(self._selected_yubikey.slot)
 
-        yubiKeyFilled = self._yubikey_filled()
         self.wizard().button(QWizard.WizardButton.NextButton).setEnabled(False)
-        if yubiKeyFilled:
+
+        # The checkbox is hidden by default
+        if self._yubikey_filled():
             self.emptyWarningCheckbox.show()
-        else:
-            self.emptyWarningCheckbox.hide()
-            self.wizard().button(QWizard.WizardButton.NextButton).setEnabled(True)
+
         self.updateNextButtonStatus()
 
     def _yubikey_filled(self):
