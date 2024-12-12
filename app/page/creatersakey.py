@@ -16,7 +16,7 @@ class CreateRSAKeysPage(QWizardPage):
 
     def _set_yelected_yubikey(self):
         slot, name, serial = self.wizard().property("selectedYubiKey")
-        self._selected_yubikey = YubikeyDetails(slot, name, serial)
+        self._selected_yubikey = YubikeyDetails(slot=slot, name=name, serial=serial.strip())
 
     def __init__(self, mypkcs, parent=None):
         super().__init__(parent)

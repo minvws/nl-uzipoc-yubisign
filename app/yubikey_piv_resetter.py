@@ -55,8 +55,9 @@ class YubiKeyPIVResetter:
 
         if not ok:
             logger.warning(
-                "Yubikey was not reset.",
+                "Yubikey was not reset. Find the stdout below.",
             )
+            logger.info(result.stdout.decode())
         else:
             logger.info(
                 f"Yubikey with serial {yubikey.serial} was successfully reset",
