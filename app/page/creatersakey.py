@@ -52,8 +52,11 @@ class CreateRSAKeysPage(QWizardPage):
             # If the YubiKey is filled and the checkbox is not checked, do not proceed
             print("Not Completed 0")
             return self.wizard().currentId()
+
+        # When the initial process starts, reset the key
         if self.checkIfYubiKeyFilled():
             os.system("ykman piv reset --force")
+
         # Start the key creation process
         QTimer.singleShot(1000, self.startKeyCreationProcess)
         self.alreadycalled = True
