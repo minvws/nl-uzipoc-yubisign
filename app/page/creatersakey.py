@@ -2,6 +2,8 @@ import os
 from PyQt6.QtWidgets import QWizardPage, QVBoxLayout, QCheckBox, QLabel, QWizard
 from PyQt6.QtCore import QTimer
 import PyKCS11
+
+from app.yubikey_details import YubikeyDetails
 from .worker import Worker
 
 
@@ -10,8 +12,15 @@ class CreateRSAKeysPage(QWizardPage):
     totalSteps = 0
     alreadycalled = None
 
+    _selected_yubikey: YubikeyDetails
+
+    def _set_yelected_yubikey(self):
+        slot, name, serial = self.wizard().property("selectedYubiKey")
+        self._selected_yubikey = YubikeyDetails(slot, name, serial)
+
     def __init__(self, mypkcs, parent=None):
         super().__init__(parent)
+        self._set_yelected_yubikey()
         self.setTitle("Create RSA Keys")
 
         layout = QVBoxLayout(self)
