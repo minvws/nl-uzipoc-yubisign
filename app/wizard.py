@@ -1,3 +1,4 @@
+import logging
 from os import getenv
 from pathlib import Path
 import sys
@@ -50,6 +51,8 @@ class MainWindow(QWizard):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+
     load_dotenv()
 
     app = QApplication(sys.argv)

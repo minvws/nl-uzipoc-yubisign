@@ -20,7 +20,6 @@ class CreateRSAKeysPage(QWizardPage):
 
     def __init__(self, mypkcs, parent=None):
         super().__init__(parent)
-        self._set_yelected_yubikey()
         self.setTitle("Create RSA Keys")
 
         layout = QVBoxLayout(self)
@@ -104,6 +103,8 @@ class CreateRSAKeysPage(QWizardPage):
             self.wizard().next()  # Programmatically trigger the Next button
 
     def initializePage(self):
+        self._set_yelected_yubikey()
+
         self.alreadycalled = False
         selectedYubiKey = self.wizard().property("selectedYubiKey")
         self.yubiKeyInfoLabel.setText(f"YubiKey Selected: {selectedYubiKey}")
