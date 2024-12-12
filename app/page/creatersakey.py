@@ -106,10 +106,8 @@ class CreateRSAKeysPage(QWizardPage):
         self._set_yelected_yubikey()
 
         self.alreadycalled = False
-        selectedYubiKey = self.wizard().property("selectedYubiKey")
-        self.yubiKeyInfoLabel.setText(f"YubiKey Selected: {selectedYubiKey}")
-        self.pkcs.listattest(selectedYubiKey[0])
-        # self.pkcs.listprivatekeys(selectedYubiKey[0])
+        self.yubiKeyInfoLabel.setText(f"YubiKey Selected: {self._selected_yubikey.serial}")
+        self.pkcs.listattest(self._selected_yubikey.slot)
 
         yubiKeyFilled = self._yubikey_filled()
         self.wizard().button(QWizard.WizardButton.NextButton).setEnabled(False)
