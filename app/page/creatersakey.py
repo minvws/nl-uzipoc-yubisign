@@ -48,14 +48,11 @@ class CreateRSAKeysPage(QWizardPage):
         if self.stepsCompleted:
             print("Completed")
             return super().nextId()
-        if (
-            self.checkIfYubiKeyFilled(self.wizard().property("selectedYubiKey"))
-            and not self.emptyWarningCheckbox.isChecked()
-        ):
+        if self.checkIfYubiKeyFilled() and not self.emptyWarningCheckbox.isChecked():
             # If the YubiKey is filled and the checkbox is not checked, do not proceed
             print("Not Completed 0")
             return self.wizard().currentId()
-        if self.checkIfYubiKeyFilled(self.wizard().property("selectedYubiKey")):
+        if self.checkIfYubiKeyFilled():
             os.system("ykman piv reset --force")
         # Start the key creation process
         QTimer.singleShot(1000, self.startKeyCreationProcess)
@@ -113,7 +110,7 @@ class CreateRSAKeysPage(QWizardPage):
         self.pkcs.listattest(selectedYubiKey[0])
         # self.pkcs.listprivatekeys(selectedYubiKey[0])
 
-        yubiKeyFilled = self.checkIfYubiKeyFilled(selectedYubiKey)
+        yubiKeyFilled = self.checkIfYubiKeyFilled()
         self.wizard().button(QWizard.WizardButton.NextButton).setEnabled(False)
         if yubiKeyFilled:
             self.emptyWarningCheckbox.show()
@@ -122,7 +119,7 @@ class CreateRSAKeysPage(QWizardPage):
             self.wizard().button(QWizard.WizardButton.NextButton).setEnabled(True)
         self.updateNextButtonStatus()
 
-    def checkIfYubiKeyFilled(self, _selectedYubiKey):
+    def checkIfYubiKeyFilled(self):
         finds = {x: {y: False for y in range(3)} for x in range(4)}
 
         HEADERS = [
@@ -139,8 +136,8 @@ class CreateRSAKeysPage(QWizardPage):
             "Key Management": "9d",
             "Card Authentication": " 9e",
         }
+        selectedYubiKeySlot = self._selected_yubikey.slot
 
-        selectedYubiKeySlot, _, _ = self.wizard().property("selectedYubiKey")
         session = self.pkcs.getsession(selectedYubiKeySlot)
         for col, cko_type in enumerate(
             [
@@ -165,6 +162,6 @@ class CreateRSAKeysPage(QWizardPage):
         return any(value for inner_dict in finds.values() for value in inner_dict.values())
 
     def updateNextButtonStatus(self):
-        yubiKeyFilled = self.checkIfYubiKeyFilled(self.wizard().property("selectedYubiKey"))
+        yubiKeyFilled = self.checkIfYubiKeyFilled()
         checkboxChecked = self.emptyWarningCheckbox.isChecked()
         self.wizard().button(QWizard.WizardButton.NextButton).setEnabled(not yubiKeyFilled or checkboxChecked)
