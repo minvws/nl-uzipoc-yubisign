@@ -48,7 +48,7 @@ class MainWindow(QWizard):
 
         # When the wizard has finished, close the application
         self.finished.connect(QApplication.instance().quit)
-        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+        self.setWindowFlags(Qt.WindowType.SplashScreen)
 
 
 if __name__ == "__main__":
