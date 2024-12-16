@@ -14,7 +14,7 @@ class YubiKeyPIVResetter:
             return False
 
         actual: str = result.stdout.decode()
-        expected_in_stdout = "Resetting PIV data...\nReset complete. All PIV data has been cleared from the YubiKey."
+        expected_in_stdout = "Reset complete."
 
         ok = expected_in_stdout in actual
 
