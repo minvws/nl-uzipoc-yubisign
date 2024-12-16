@@ -35,7 +35,6 @@ DEFAULT_PROEFTUIN_OIDC_LOGIN_URL = "https://proeftuin.uzi-online.irealisatie.nl"
 class MainWindow(QWizard):
     def __init__(self, mypkcs, myacme, oidc_provider_base_url: urllib.parse.ParseResult):
         super().__init__()
-        self.setWindowFlags(Qt.WindowType.Dialog)
         self.setWindowTitle("YubiKey Wizard")
         self.resize(1024, 768)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -49,6 +48,7 @@ class MainWindow(QWizard):
 
         # When the wizard has finished, close the application
         self.finished.connect(QApplication.instance().quit)
+        self.setWindowFlags(Qt.WindowType.Desktop)
 
 
 if __name__ == "__main__":
