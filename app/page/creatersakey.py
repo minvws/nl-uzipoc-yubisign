@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWizardPage, QVBoxLayout, QCheckBox, QLabel, QWizard
+from PyQt6.QtWidgets import QWizardPage, QVBoxLayout, QCheckBox, QLabel
 from PyQt6.QtCore import QTimer
 
 from app.yubikey_content_checker import YubikeyContentChecker
