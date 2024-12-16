@@ -35,7 +35,7 @@ class MainWindow(QWizard):
         super().__init__()
 
         self.setWindowTitle("YubiKey Wizard")
-        self.resize(1024, 768)
+        # self.resize(1024, 768)
 
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.addPage(WelcomePage())
