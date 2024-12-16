@@ -1,24 +1,27 @@
+import pathlib
 from PyQt6.QtWidgets import QWizardPage, QVBoxLayout, QTextBrowser
 
 
 class WelcomePage(QWizardPage):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setTitle("Welcome")
+    _TITLE = "Welcome"
+    _HTML_FILE = pathlib.Path(__file__).parent / "welcome.html"
+
+    def _read_html_content(self):
+        with open(self._HTML_FILE, "r") as file:
+            return file.read()
+
+    def _setup_ui(self):
+        self.setTitle(self._TITLE)
 
         layout = QVBoxLayout(self)
 
-        htmlContent = """
-        <html>
-                <body style='background: transparent;'>
-                 <img src="images/ro-logo.svg" alt="Logo Rijksoverheid">Rijksoverheid
-                <h1>Welkom bij de demo digitaal ondertekenen</h1>
-                <p>Met deze applicatie is een YubiKey te vullen met een demo-uzi-certifcaat</p>
-            </body>
-        </html>
-        """
+        content = self._read_html_content()
 
         htmlView = QTextBrowser()
-        htmlView.setHtml(htmlContent)
+        htmlView.setHtml(content)
         htmlView.setStyleSheet("background: transparent")
         layout.addWidget(htmlView)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._setup_ui()
