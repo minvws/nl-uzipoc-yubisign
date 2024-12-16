@@ -1,6 +1,5 @@
 from os import getenv
 from pathlib import Path
-import sys
 
 
 from PyQt6.QtWidgets import (
@@ -8,6 +7,8 @@ from PyQt6.QtWidgets import (
     QSizePolicy,
     QWizard,
 )
+from PyQt6.QtCore import Qt
+
 
 from app.acme_directory_configuration_parser import ACMEDirectoryConfigurationParser
 from app.pkcs_lib_finder import PKCS11LibFinder
@@ -34,7 +35,7 @@ DEFAULT_PROEFTUIN_OIDC_LOGIN_URL = "https://proeftuin.uzi-online.irealisatie.nl"
 class MainWindow(QWizard):
     def __init__(self, mypkcs, myacme, oidc_provider_base_url: urllib.parse.ParseResult):
         super().__init__()
-        # self.setWindowFlags(Qt.WindowType.Window)
+        self.setWindowFlags(Qt.WindowType.Window)
         self.setWindowTitle("YubiKey Wizard")
         self.resize(1024, 768)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
