@@ -11,7 +11,6 @@ class CreateRSAKeysPage(QWizardPage):
     currentStep = 0
     totalSteps = 0
 
-    # Maybe we can use an enum for these fields
     _key_creation_started: bool
     _keys_created: bool
 
