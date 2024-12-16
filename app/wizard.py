@@ -2,8 +2,6 @@ from os import getenv
 from pathlib import Path
 import sys
 
-from PyQt6.QtCore import Qt
-
 
 from PyQt6.QtWidgets import (
     QApplication,
@@ -36,10 +34,10 @@ DEFAULT_PROEFTUIN_OIDC_LOGIN_URL = "https://proeftuin.uzi-online.irealisatie.nl"
 class MainWindow(QWizard):
     def __init__(self, mypkcs, myacme, oidc_provider_base_url: urllib.parse.ParseResult):
         super().__init__()
-        self.setWindowFlags(Qt.WindowType.Window)
+        # self.setWindowFlags(Qt.WindowType.Window)
         self.setWindowTitle("YubiKey Wizard")
         self.resize(1024, 768)
-        # self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         self.addPage(WelcomePage())
         self.addPage(SelectYubiKeyPage(mypkcs))
@@ -55,7 +53,7 @@ class MainWindow(QWizard):
 if __name__ == "__main__":
     load_dotenv()
 
-    app = QApplication(sys.argv)
+    app = QApplication([])
 
     yubikey_pin = getenv(
         "YUBIKEY_PIN",
