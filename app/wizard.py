@@ -36,8 +36,7 @@ class MainWindow(QWizard):
 
         self.setWindowTitle("YubiKey Wizard")
         # self.resize(1024, 768)
-
-        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        # self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.addPage(WelcomePage())
         self.addPage(SelectYubiKeyPage(mypkcs))
         self.addPage(CreateRSAKeysPage(mypkcs))
