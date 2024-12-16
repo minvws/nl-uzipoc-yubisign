@@ -17,9 +17,7 @@ import urllib.parse
 
 
 class LoginWithDigiDPage(QWizardPage):
-    profile = None
-    browser = None
-
+    browser: QWebEngineView
     acme: ACME
 
     _oidc_provider_base_url: urllib.parse.ParseResult
@@ -34,14 +32,34 @@ class LoginWithDigiDPage(QWizardPage):
         self.acme = myacme
         self._oidc_provider_base_url = oidc_provider_base_url
 
+        self._prepare_acme_object()
+        self._setup_ui()
+
     def _get_jwt_url(self):
         return urllib.parse.urljoin(self._oidc_provider_base_url.geturl(), "ziekenboeg/users/jwt")
 
-    def initializePage(self):
-        layout = QVBoxLayout(self)
-        self.profile = QWebEngineProfile("CustomProfile", self)
-        self.browser = QWebEngineView()
-        self.browser.setPage(QWebEnginePage(self.profile, self.browser))
+    def _build_browser(self) -> QWebEngineView:
+        profile = QWebEngineProfile("CustomProfile", self)
+        browser = QWebEngineView()
+
+        page = QWebEnginePage(profile, browser)
+        browser.setPage(page)
+
+        query = QUrlQuery()
+        query.addQueryItem("acme_tokens", ",".join(self.acme.tokens))
+
+        login_url = urllib.parse.urljoin(self._oidc_provider_base_url.geturl(), "oidc/login")
+        url = QUrl(login_url)
+        url.setQuery(query)
+
+        browser.load(url)
+
+        browser.urlChanged.connect(self.onUrlChanged)
+        browser.loadFinished.connect(self.onLoadFinished)
+
+        return browser
+
+    def _prepare_acme_object(self):
         self.acme.challenges = [{}, {}, {}, {}]
         self.acme.tokens = ["", "", "", ""]
 
@@ -54,23 +72,14 @@ class LoginWithDigiDPage(QWizardPage):
             self.acme.order(keynum)
             self.acme.getchallenge(keynum - 1)
 
-        login_url = urllib.parse.urljoin(self._oidc_provider_base_url.geturl(), "oidc/login")
-        url = QUrl(login_url)
+    def _setup_ui(self):
+        layout = QVBoxLayout(self)
 
-        query = QUrlQuery()
-        query.addQueryItem("acme_tokens", ",".join(self.acme.tokens))  # Replace with your parameter name and value
-        url.setQuery(query)
-        self.browser.load(url)
-
+        self.browser = self._build_browser()
         layout.addWidget(self.browser)
 
-        self.browser.urlChanged.connect(self.onUrlChanged)
-        self.browser.loadFinished.connect(self.onLoadFinished)
-
     def isComplete(self):
-        if self.acme.jwt_token:
-            return True
-        return False
+        return bool(self.acme.jwt_token)
 
     def onUrlChanged(self, url):
         print(url.toString())
