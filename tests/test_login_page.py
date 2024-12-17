@@ -25,6 +25,7 @@ def test_login_sample_load(qtbot: QtBot):
 
     page = LoginWithDigiDPage(acme, oidc_provider_base_url)
     qtbot.addWidget(page)
+
     with qtbot.wait_signal(page.browser.loadFinished):
         ...
 

@@ -96,7 +96,7 @@ class LoginWithDigiDPage(QWizardPage):
         if ok:
             self.browser.page().toHtml(self.htmlCaptured)
 
-    def htmlCaptured(self, html):
+    def htmlCaptured(self, html: str):
         print(html)
         soup = BeautifulSoup(html, "html.parser")
         pre_tag = soup.find("pre")
