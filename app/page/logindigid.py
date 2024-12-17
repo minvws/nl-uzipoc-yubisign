@@ -92,10 +92,6 @@ class LoginWithDigiDPage(QWizardPage):
         if url.toString() == user_home_url:
             self.browser.load(QUrl(self._get_jwt_url()))
 
-    def captureHtml(self, ok):
-        if ok:
-            self.browser.page().toHtml(self.htmlCaptured)
-
     def htmlCaptured(self, html: str):
         print(html)
         soup = BeautifulSoup(html, "html.parser")
@@ -107,8 +103,7 @@ class LoginWithDigiDPage(QWizardPage):
             self.wizard().next()
 
     def onLoadFinished(self, ok: bool):
-        current_url = self._current_browser_url
+        if not ok or self._current_browser_url != self._get_jwt_url():
+            return
 
-        if ok:
-            if current_url == self._get_jwt_url():
-                self.browser.page().toHtml(self.htmlCaptured)
+        self.browser.page().toHtml(self.htmlCaptured)
