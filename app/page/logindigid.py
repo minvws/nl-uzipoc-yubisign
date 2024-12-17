@@ -22,6 +22,10 @@ class LoginWithDigiDPage(QWizardPage):
 
     _oidc_provider_base_url: urllib.parse.ParseResult
 
+    @property
+    def _current_browser_url(self) -> str:
+        return self.browser.url().toString()
+
     def __init__(
         self,
         myacme: ACME,
@@ -81,9 +85,9 @@ class LoginWithDigiDPage(QWizardPage):
     def isComplete(self):
         return bool(self.acme.jwt_token)
 
-    def onUrlChanged(self, url):
-        print(url.toString())
-
+    def onUrlChanged(self, url: QUrl):
+        # This method will also get called on the intial page load. We only need this to load the JWT
+        # page when the user navigates to the /home page
         user_home_url = urllib.parse.urljoin(self._oidc_provider_base_url.geturl(), "ziekenboeg/users/home")
         if url.toString() == user_home_url:
             self.browser.load(QUrl(self._get_jwt_url()))
@@ -102,8 +106,9 @@ class LoginWithDigiDPage(QWizardPage):
             print("Got JWT:", self.acme.gettoken())
             self.wizard().next()
 
-    def onLoadFinished(self, ok):
+    def onLoadFinished(self, ok: bool):
+        current_url = self._current_browser_url
+
         if ok:
-            current_url = self.browser.url().toString()
             if current_url == self._get_jwt_url():
                 self.browser.page().toHtml(self.htmlCaptured)
