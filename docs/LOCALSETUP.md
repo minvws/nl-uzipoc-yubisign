@@ -7,8 +7,7 @@ git clone --single-branch --branch uzipoc_q4_2024 git@github.com:minvws/nl-uzipo
 
 
 ## Requirements
-
-This application requires the [`yubico-piv-tool`](https://developers.yubico.com/yubico-piv-tool/) installed on your computer and therefor the `libykcs11` library. Next to that, make sure you have the following tools:
+This application requires the [`yubico-piv-tool`](https://developers.yubico.com/yubico-piv-tool/) installed on your computer and therefor the `libykcs11` library. The `yubico-piv-tool` needs to be available in your system path. Next to that, the [`ykman`](https://developers.yubico.com/yubikey-manager/Releases/) CLI is also required in your path. make sure you have the following tools:
 
 - **`python3.13`**: Make sure the executable is also accessible from your local terminal.
 - **`git`**: To update the application when needed.
@@ -95,7 +94,11 @@ This will open up the initial screen, press continue.
 This screen allows you to select a YubiKey. Select yours and click continue.
 ![alt text](image-1.png)
 
-#### 2.3 Logging in
+#### 2.3 Creating the RSA keys
+This step creates the RSA keys on the selected Yubikey. In here, tick the checkbox and click continue.
+![](./image-2.png)
+
+#### 2.4 Logging in
 
 The next step is to login. In here, select the "Inloggen met DigiD mock" method.
 ![alt text](image-4.png)
@@ -103,7 +106,7 @@ The next step is to login. In here, select the "Inloggen met DigiD mock" method.
 You will then be presented with a mock BSN number. In here, click the "Login / Submit" button. Under the hood, a JWT is now fetched.
 ![alt text](image-5.png)
 
-#### 2.4 Finalizing
+#### 2.5 Finalizing
 
 The certificate is now created and saved on the Yubikey. Now, press continue again. The application can now be exited.
 ![alt text](image-6.png)
