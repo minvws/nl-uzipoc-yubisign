@@ -50,8 +50,6 @@ class MainWindow(QWizard):
 
 
 class ApplicationBootstrapper:
-    PROJECT_ROOT = Path(__file__).parent.parent
-
     DEFAULT_ACME_CA_SERVER_URL = "https://acme.proeftuin.uzi-online.rdobeheer.nl/directory"
     DEFAULT_YUBIKEY_PIN = "123456"
     DEFAULT_PROEFTUIN_OIDC_LOGIN_URL = "https://proeftuin.uzi-online.irealisatie.nl"
