@@ -65,7 +65,7 @@ class ApplicationBootstrapper:
         pkcslib = PKCS11LibFinder().find()
 
         if not pkcslib:
-            raise RuntimeError("The PKCS library was not found. Application can't start up.")
+            raise RuntimeError("The PKCS library was not found. Application can not start up.")
 
         pkcscls = pkcs(pykcs11lib=pkcslib, yubikey_pin=yubikey_pin)
 
