@@ -12,7 +12,6 @@ from .pkcs import pkcs
 from .appacme import ACME
 
 import urllib.parse
-from dotenv import load_dotenv
 
 
 from .page.welcome import WelcomePage
