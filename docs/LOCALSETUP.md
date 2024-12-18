@@ -95,7 +95,11 @@ This will open up the initial screen, press continue.
 This screen allows you to select a YubiKey. Select yours and click continue.
 ![alt text](image-1.png)
 
-#### 2.3 Logging in
+#### 2.3 Creating the RSA keys
+This step creates the RSA keys on the selected Yubikey. In here, tick the checkbox and click continue.
+![](./image-2.png)
+
+#### 2.4 Logging in
 
 The next step is to login. In here, select the "Inloggen met DigiD mock" method.
 ![alt text](image-4.png)
@@ -103,7 +107,7 @@ The next step is to login. In here, select the "Inloggen met DigiD mock" method.
 You will then be presented with a mock BSN number. In here, click the "Login / Submit" button. Under the hood, a JWT is now fetched.
 ![alt text](image-5.png)
 
-#### 2.4 Finalizing
+#### 2.5 Finalizing
 
 The certificate is now created and saved on the Yubikey. Now, press continue again. The application can now be exited.
 ![alt text](image-6.png)
