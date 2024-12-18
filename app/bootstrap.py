@@ -69,7 +69,6 @@ class ApplicationBootstrapper:
         return pkcscls
 
     def start(self):
-        load_dotenv()
         app = QApplication(sys.argv)
 
         pkcscls: pkcs = self._load_pkcs_wrapper()

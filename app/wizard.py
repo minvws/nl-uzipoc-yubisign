@@ -1,4 +1,4 @@
-from app.main import ApplicationBootstrapper
+from app.bootstrap import ApplicationBootstrapper
 from dotenv import load_dotenv
 
 
