@@ -24,9 +24,6 @@ This application should be used with the [Yubikey 5C NFC]( https://www.yubico.co
   - Windows 10 SDK (10.0.17763.0) for Desktop C++
 - Make sure you have added the directory where the `libykcs11.dll` library is located to the system PATH. See [the documentation](https://developers.yubico.com/yubico-piv-tool/YKCS11/) for more information.
 
-
-
-
 ## Installation
 
 ### 1.1 Creating and activating a virtual environment
