@@ -5,6 +5,8 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QFont
 
+from app.yubikey_details import YubikeyDetails
+
 
 class YubiKeyItemWidget(QWidget):
     def __init__(self, name, serial, available, slot):
@@ -29,3 +31,6 @@ class YubiKeyItemWidget(QWidget):
 
     def getYubiKeyDetails(self):
         return self.slot, self.name, self.serial
+
+    def get_details(self) -> YubikeyDetails:
+        return YubikeyDetails(slot=self.slot, name=self.name, serial=self.serial.strip())

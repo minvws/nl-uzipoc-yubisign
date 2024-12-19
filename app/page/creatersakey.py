@@ -17,8 +17,8 @@ class CreateRSAKeysPage(QWizardPage):
     _selected_yubikey: YubikeyDetails
 
     def _set_yelected_yubikey(self):
-        slot, name, serial = self.wizard().property("selectedYubiKey")
-        self._selected_yubikey = YubikeyDetails(slot=slot, name=name, serial=serial.strip())
+        key: YubikeyDetails = self.wizard().property("selected_yubikey")
+        self._selected_yubikey = key
 
     def _build_checkbox(self):
         checkbox = QCheckBox("I understand that the YubiKey will be emptied")

@@ -85,10 +85,8 @@ class SelectYubiKeyPage(QWizardPage):
             return super().nextId()
 
         # Store the selected YubiKey information in the wizard
-        self.wizard().setProperty(
-            "selectedYubiKey",
-            widget.getYubiKeyDetails(),
-        )
+        self.wizard().setProperty("selected_yubikey", widget.get_details())
+
         return super().nextId()
 
     def initializePage(self) -> None:
