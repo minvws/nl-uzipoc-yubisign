@@ -14,8 +14,6 @@ This application requires the [`yubico-piv-tool`](https://developers.yubico.com/
 
 This application should be used with the [Yubikey 5C NFC]( https://www.yubico.com/nl/product/yubikey-5-series/yubikey-5c-nfc/).
 
-
-
 #### Windows specific
 > When installing Python on Windows, make sure to add `python.exe` to your PATH and disable path length limit during the installation.
 
