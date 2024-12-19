@@ -4,8 +4,6 @@ First clone this repository and checkout the `uzipoc_q4_2024` branch. You can th
 ```bash
 git clone --single-branch --branch uzipoc_q4_2024 git@github.com:minvws/nl-uzipoc-yubisign.git
 ```
-
-
 ## Requirements
 This application requires the [`yubico-piv-tool`](https://developers.yubico.com/yubico-piv-tool/) installed on your computer and therefor the `libykcs11` library. The `yubico-piv-tool` needs to be available in your system path. Next to that, the [`ykman`](https://developers.yubico.com/yubikey-manager/Releases/) CLI is also required in your path. make sure you have the following tools:
 
