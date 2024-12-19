@@ -9,7 +9,12 @@ from app.yubikey_details import YubikeyDetails
 
 
 class YubiKeyItemWidget(QWidget):
-    def __init__(self, name, serial, available, slot):
+    slot: str
+    name: str
+    serial: str
+    available: bool
+
+    def __init__(self, name: str, serial: str, available: bool, slot: str):
         super().__init__()
 
         layout = QVBoxLayout()
