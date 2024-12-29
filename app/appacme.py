@@ -1,8 +1,11 @@
+from os import getenv
 from app.acme_directory_configuration import ACMEDirectoryConfiguration
 from .acme import Acme
 
 
 class ACME:
+    _DEFAULT_ACME_ACCOUNT_EMAIL = "helpdesk@irealisatie.nl"
+
     nonce = None
     jwt_token = ""
     client = None
@@ -32,7 +35,12 @@ class ACME:
         Create an account. As per acme standard an email needs
         to be provided.
         """
-        areq = {"termsOfServiceAgreed": True, "contact": ["mailto:helpdesk@irealisatie.nl"]}
+        account_email: str = getenv("ACME_ACCOUNT_EMAIL", self._DEFAULT_ACME_ACCOUNT_EMAIL)
+
+        areq = {
+            "termsOfServiceAgreed": True,
+            "contact": [f"mailto:{account_email}"],
+        }
         self.client.account_request(areq)
 
     def order(self, keynum):

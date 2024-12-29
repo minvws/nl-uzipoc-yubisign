@@ -1,18 +1,22 @@
 # Local setup
+
 First clone this repository and checkout the desired branch. You can then follow this document to set up and run the application.
 
 ```bash
 git clone git@github.com:minvws/nl-uzipoc-yubisign.git
 ```
+
 ## Requirements
+
 This application requires the [`yubico-piv-tool`](https://developers.yubico.com/yubico-piv-tool/) installed on your computer and therefor the `libykcs11` library. The `yubico-piv-tool` needs to be available in your system path. Next to that, the [`ykman`](https://developers.yubico.com/yubikey-manager/Releases/) CLI is also required in your path. make sure you have the following tools:
 
 - **`python3.13`**: Make sure the executable is also accessible from your local terminal.
 - **`git`**: To update the application when needed.
 
-This application should be used with the [Yubikey 5C NFC]( https://www.yubico.com/nl/product/yubikey-5-series/yubikey-5c-nfc/).
+This application should be used with the [Yubikey 5C NFC](https://www.yubico.com/nl/product/yubikey-5-series/yubikey-5c-nfc/).
 
 #### Windows specific
+
 > When installing Python on Windows, make sure to add `python.exe` to your PATH and disable path length limit during the installation.
 
 > The PIV tool can be installed via [this link](https://developers.yubico.com/yubico-piv-tool/Releases/).
@@ -33,6 +37,7 @@ First, verify if the Python version was set to `3.13`
 ```bash
 python --version
 ```
+
 Then to create an isolated environment where we can install the Python requirements in, use the below command to use the `venv` package.
 
 ```bash
@@ -59,11 +64,12 @@ pip install -r requirements.in
 
 There are a few environmnent variables which need to be configured via the `.env` file. For this, copy and rename the `.env.example` file and fill in the corresponding values. See the table underneath for the examples.
 
-|          Variable           |                         Default value                          | Type  |
-| :-------------------------: | :------------------------------------------------------------: | :---: |
+|          Variable           |                        Default value                         | Type  |
+| :-------------------------: | :----------------------------------------------------------: | :---: |
 | `ACME_SERVER_DIRECTORY_URL` | `"https://acme.proeftuin.uzi-online.rdobeheer.nl/directory"` | `str` |
-|        `YUBIKEY_PIN`        |                           `"123456"`                           | `str` |
-|  `OIDC_PROVIDER_BASE_URL`   |        `"https://proeftuin.uzi-online.irealisatie.nl"`         | `str` |
+|        `YUBIKEY_PIN`        |                          `"123456"`                          | `str` |
+|    `ACME_ACCOUNT_EMAIL`     |                 `"helpdesk@irealisatie.nl"`                 | `str` |
+|  `OIDC_PROVIDER_BASE_URL`   |       `"https://proeftuin.uzi-online.irealisatie.nl"`        | `str` |
 
 The `ACME_SERVER_DIRECTORY_URL` should be set to the the directory URL of the ACME server. For example, this can be `http://localhost:8080/acme/directory` when working with the local ACME server developed by iRealisatie.
 
@@ -88,6 +94,7 @@ This screen allows you to select a YubiKey. Select yours and click continue.
 ![alt text](image-1.png)
 
 #### 2.3 Creating the RSA keys
+
 This step creates the RSA keys on the selected Yubikey. In here, tick the checkbox and click continue.
 ![](./image-2.png)
 
