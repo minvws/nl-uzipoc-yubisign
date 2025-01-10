@@ -1,45 +1,60 @@
-# Disclaimer
-This Repository is created as a PoC (Proof of Concept) as part of the project *Toekomstbestendig maken UZI*, and 
-**should not be used as is in any production environment**.
+# PoC with Yubikey
 
-# Wat doet dit?
+In order to automate certificate issuance for UZI, a PoC was done with a YubiKey and an ACME server. The keypairs are generated on the YubiKey and the certificate is issued by the ACME server. This program is designed to start with a _new_ YubiKey, meaning it should have the default PIN. This document will give you an high overview.
 
-Dit neemt een yubikey (doe maar versie 5) en maakt daarin de PIV module *leeg*
+### Steps
 
-Nadat deze leeg is worden er 4 keys aangemaakt in de yubikey
+- The YubiKey is reset: all the certificates on the device will be removed and the PIN code will be reset.
+- We will generate 4 public and private key pairs on the YubiKey. These are for PIV Authentication, Digital Signature, Key Management and Card Authentication. Next to that, the YubiKey will generate additional attestation certificates, to prove that the private key is generated on the YubiKey itself. The private keys will always remain in the YubiKey.
+- The user logs in via the chosen [authentication flow](./AUTH_FLOW.md). This returns an JWT, containing the user information.
+- Per generated key pair, an certificate signing request (CSR) is created and signed by the private key.
+- Finally, each certificate signing request with the corresponding attestation certificate is validated at the ACME server. When this is done, the server will issue an certificate for every key pair. Here, the JWT of the user is also used. This is done with the ACME server of iRealisatie. These are then saved back into the YubiKey into the corresponding slot.
 
-Er wordt contact gelegd met de rdo-acme service. En er worden 4 orders aangemaakt
+Now it is possible to use the certificate on the YubiKey to sign data.
 
-Van deze 4 orders wordt de unique-anti-replay-token meegestuurd met een uzi-labs digid login verzoek
+#### Diagram flow
 
-Er wordt een browser geopend in de applicatie zelf, daarmee log je in als zorg identiteit bij de ziekenboeg-uzi-labs
+This diagram expects that the Yubikey is already plugged in the user's computer. Next to that, it's expected that the user should use the **DigiD mock** login method.
 
-De app haalt hierna de JWT-token op bij ziekenboeg-uzi-labs waarin de 4 acmetokens zitten.
+```mermaid
+sequenceDiagram
+    actor APP
+    participant YUBIKEY
 
-Er wordt van de yubikey zelf opgehaald:
-* Het intermediate certificaat behorende bij de yubikey zoals geleverd door yubico op de yubikey zelf
+    APP->>YUBIKEY: 1. Sends request to empty the Yubikeys certificates
+    YUBIKEY-->YUBIKEY: Empties the certificates
 
-Per sleutel op de yubikey:
-* Een door de yubikey ondertekend certificaat per sleutel waarin de garantie (attestation) staat dat de sleutel echt op een yubikey is gemaakt
-* een CSR verzoek ondertekend door de aangemaakte sleutel
+    APP->>YUBIKEY: 2. Sends request to generate 4 new private key pairs
+    YUBIKEY-->YUBIKEY: 2.1 Create key pair for PIV Authentication
+    YUBIKEY-->YUBIKEY: 2.2 Create key pair for Digital Signature
+    YUBIKEY-->YUBIKEY: 2.3 Create key pair for Key Management
+    YUBIKEY-->YUBIKEY: 2.4 Create key pair for Card Authentication
 
-Per order wordt dan verstuurd:
-* De JWT
-* Het yubikey intermediate certificaat
-* Het attestation certificaat
+    create participant MAX
+    APP->>MAX: 3. Opens browser to login the user
+    MAX-->MAX: 3.1 Validates the user
+    MAX-->>APP: Returns the JWT containing the user information.
 
-De acme server controleert dan per order:
-* of het attestation certificaat van de sleutel klopt
-* het token voor order in de JWT zit
-* De JWT goed is en van een geldige uzi-cibg-labs-uitgever komt
+    APP->>APP: 4. Per generated key pair, <br> an certificate signing request (CSR)<br> is created and signed by the private key.
 
-Als dat klopt dan geeft de acme server terug dat het klopt en dan vraagt deze app in de laatste stap een certificaat aan met de eerder genoemde CSR.
+    create participant ACME_SERVER
+    loop 5. For every certificate signing request (CSR)
+        APP->>ACME_SERVER: Validate every certificate signing request with the corresponding attestation certificate
+        ACME_SERVER-->>APP: OK
+    end
 
-Als de CSR dezelfde public key heeft als in de vorige stap gecontroleerde gegevens wordt er een Labs-UZI certifcaat uitgegeven op basis van de gegevens in de JWT.
-Dit certificaat bevat de huidige UZI-Certificaten structuur.
+    loop 6. For every key pair
+        APP->>ACME_SERVER: Request certificate for every key pair, also using the users' JWT
+        ACME_SERVER-->>APP: OK
+        ACME_SERVER-->>YUBIKEY: Save certificates
+    end
 
-Als er een certificaat is opgehaald wordt dit opgeslagen op de juiste plek in de yubikey.
+```
 
-Door het laden van de yubikey pkcs11 library in de browser, office, mac os, windows of linux plekken (zoals beschreven door yubico) kan de yubikey daarna
-worden gebruikt zoals een UZIpas ook gebruikt kan worden. Voor digitaal ondertekenen van documenten, verzoeken en om in te loggen in de browser bij
-partijen die UZI certificaten login mogelijk maken.
+### Disclaimer
+
+This Repository is created as a PoC (Proof of Concept) as part of the project _Toekomstbestendig maken UZI_, and **should not be used as is in any production environment**.
+
+### Licentie
+
+This project is licensed under the [EUPL-1.2 license](./LICENSE.txt).

@@ -1,0 +1,35 @@
+name: Format and lint
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+    - "*"
+    types: [opened, synchronize, closed]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install developement requirements
+        run: pip install -r requirements-dev.txt
+
+      - name: Check for linting errors
+        run: ruff check . 
+
+      - name: Check for formatting errors
+        run: ruff format --check
+      

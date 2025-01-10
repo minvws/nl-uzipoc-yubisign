@@ -4,9 +4,13 @@ from base64 import urlsafe_b64encode
 import requests
 from jwcrypto import jwk, jwt
 
+import urllib.parse
+
+from app.acme_directory_configuration import ACMEDirectoryConfiguration
+
 
 class Acme:
-    url = None
+    url: urllib.parse.ParseResult
     key = None
     nonce = None
     kid = None
@@ -14,8 +18,13 @@ class Acme:
     certurl = None
     finalize = {}
 
-    def __init__(self, url):
-        self.url = url
+    _directory_configuration: ACMEDirectoryConfiguration
+
+    def __init__(
+        self,
+        directory_config: ACMEDirectoryConfiguration,
+    ):
+        self._directory_configuration = directory_config
 
     def debugrequest(self, protected, payload):
         print("  protected")
@@ -36,9 +45,7 @@ class Acme:
         This does only generate a P-256 key for use with JWT.
         This key is only used during the session to request a certificate from ACME.
         """
-        self.key = jwk.JWK.generate(
-            kty="EC", crv="P-256", key_ops=["verify", "sign"], alg="ES256"
-        )
+        self.key = jwk.JWK.generate(kty="EC", crv="P-256", key_ops=["verify", "sign"], alg="ES256")
 
     def get_nonce(self):
         """
@@ -47,7 +54,10 @@ class Acme:
         without having to use the previous nonce. This is stored in self.nonce
         as with all updates, as every request answers with a new nonce.
         """
-        response = requests.get(self.url + "acme/new-nonce", timeout=60)
+        response = requests.get(
+            self._directory_configuration.new_nonce_url,
+            timeout=60,
+        )
         self.nonce = response.headers["Replay-Nonce"]
 
     def account_request(self, request):
@@ -58,18 +68,20 @@ class Acme:
         add the nonce (see above), url and alg and tada.wav.
         """
         print("Account Request")
+
         protected = {
             "alg": "ES256",
             "nonce": self.nonce,
-            "url": self.url + "acme/new-acct",
+            "url": self._directory_configuration.new_account_url,
             "jwk": self.key.export_public(True),
         }
         token = jwt.JWS(payload=json.dumps(request))
         token.add_signature(self.key, alg="ES256", protected=protected)
         self.debugrequest(protected, request)
         headers = {"Content-Type": "application/jose+json"}
+
         response = requests.post(
-            self.url + "acme/new-acct",
+            self._directory_configuration.new_account_url,
             data=token.serialize(),
             headers=headers,
             timeout=60,
@@ -88,10 +100,13 @@ class Acme:
         afterwards.
         """
         print("Order")
+
+        new_order_url = self._directory_configuration.new_order_url
+
         protected = {
             "alg": "ES256",
             "nonce": self.nonce,
-            "url": self.url + "acme/new-order",
+            "url": new_order_url,
             "kid": self.kid,
         }
         self.debugrequest(protected, order)
@@ -99,7 +114,7 @@ class Acme:
         token.add_signature(self.key, alg="ES256", protected=protected)
         headers = {"Content-Type": "application/jose+json"}
         response = requests.post(
-            self.url + "acme/new-order",
+            new_order_url,
             data=token.serialize(),
             headers=headers,
             timeout=60,
@@ -132,13 +147,19 @@ class Acme:
         token = jwt.JWS(payload="")
         token.add_signature(self.key, alg="ES256", protected=protected)
         headers = {"Content-Type": "application/jose+json"}
-        response = requests.post(
-            challengeurl, data=token.serialize(), headers=headers, timeout=60
-        )
+
+        # Request the challenge per PIV-slot from the ACME-server.
+        # This will return a random token, with the status of pending.
+        #
+        # Later on, these tokens from the challenges should be contained in the users' JWT.
+        response = requests.post(challengeurl, data=token.serialize(), headers=headers, timeout=60)
+        returned_json = response.json()
+
         self.debugresponse(response)
         self.nonce = response.headers["Replay-Nonce"]
-        assert response.json()["status"] in ["pending", "valid"]
-        return response.json()["challenges"], response.json()["status"]
+
+        assert returned_json["status"] in ["pending", "valid"]
+        return returned_json["challenges"], returned_json["status"]
 
     def send_challenge_jwt(self, challenge, hw_attestation, uzi_jwt, f9_cert):
         """
@@ -167,9 +188,7 @@ class Acme:
         }
         print("  headers")
         print(headers)
-        response = requests.post(
-            challengeurl, data=token.serialize(), headers=headers, timeout=60
-        )
+        response = requests.post(challengeurl, data=token.serialize(), headers=headers, timeout=60)
         self.nonce = response.headers["Replay-Nonce"]
         self.debugresponse(response)
 
@@ -191,15 +210,13 @@ class Acme:
         token = jwt.JWS(payload=json.dumps({}))
         token.add_signature(self.key, alg="ES256", protected=protected)
         headers = {"Content-Type": "application/jose+json"}
-        response = requests.post(
-            notifyurl, data=token.serialize(), headers=headers, timeout=60
-        )
+        response = requests.post(notifyurl, data=token.serialize(), headers=headers, timeout=60)
         self.nonce = response.headers["Replay-Nonce"]
         self.debugresponse(response)
         assert response.json()["status"] in ["pending", "valid"]
         return response.json()["status"], response.json()["url"]
 
-    def final(self, keynum, csr):
+    def final(self, keynum, csr, jwt_token: str):
         """
         There is an order, we are correct. Now we get to request a certificate.
         To do this we provide a CSR and that gets signed with the root/sub-CA
@@ -213,18 +230,18 @@ class Acme:
             "kid": self.kid,
         }
         payload = {
-            #    "csr": b64encode(csr).decode().replace('+','-').replace('/','_'),
-            "csr": urlsafe_b64encode(csr)
-            .decode()
-            .rstrip("="),
+            "csr": urlsafe_b64encode(csr).decode().rstrip("="),
         }
         self.debugrequest(protected, payload)
         token = jwt.JWS(payload=json.dumps(payload))
         token.add_signature(self.key, alg="ES256", protected=protected)
-        headers = {"Content-Type": "application/jose+json"}
-        response = requests.post(
-            self.finalize[keynum], data=token.serialize(), headers=headers, timeout=60
-        )
+        headers = {
+            "Content-Type": "application/jose+json",
+            "X-Acme-Jwt": jwt_token,
+        }
+
+        # This calls the finalize method, preparing the certificate
+        response = requests.post(self.finalize[keynum], data=token.serialize(), headers=headers, timeout=60)
         self.nonce = response.headers["Replay-Nonce"]
         self.debugresponse(response)
         assert response.json()["status"] == "valid"
@@ -246,11 +263,8 @@ class Acme:
         token = jwt.JWS(payload="")
         token.add_signature(self.key, alg="ES256", protected=protected)
         headers = {"Content-Type": "application/jose+json"}
-        response = requests.post(
-            self.certurl, data=token.serialize(), headers=headers, timeout=60
-        )
+        response = requests.post(self.certurl, data=token.serialize(), headers=headers, timeout=60)
         self.nonce = response.headers["Replay-Nonce"]
-        self.debugresponse(response)
         return response.text
 
     def clean_headers(self, headers):
@@ -292,6 +306,4 @@ class Acme:
         """
         A simple hack to learn pprint to add some spaces upfront. Better for viewing
         """
-        print(
-            "\n".join(["    " + x for x in pprint.pformat(data, width=80).splitlines()])
-        )
+        print("\n".join(["    " + x for x in pprint.pformat(data, width=80).splitlines()]))

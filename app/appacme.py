@@ -1,7 +1,11 @@
+from os import getenv
+from app.acme_directory_configuration import ACMEDirectoryConfiguration
 from .acme import Acme
 
 
 class ACME:
+    _DEFAULT_ACME_ACCOUNT_EMAIL = "helpdesk@irealisatie.nl"
+
     nonce = None
     jwt_token = ""
     client = None
@@ -10,8 +14,11 @@ class ACME:
     challenges = [{}, {}, {}, {}]
     tokens = ["", "", "", ""]
 
-    def __init__(self, url):
-        self.client = Acme(url)
+    def __init__(
+        self,
+        directory_config: ACMEDirectoryConfiguration,
+    ):
+        self.client = Acme(directory_config)
         """
         Get the first nonce.
         """
@@ -28,7 +35,12 @@ class ACME:
         Create an account. As per acme standard an email needs
         to be provided.
         """
-        areq = {"termsOfServiceAgreed": True, "contacts": ["email@example.com"]}
+        account_email: str = getenv("ACME_ACCOUNT_EMAIL", self._DEFAULT_ACME_ACCOUNT_EMAIL)
+
+        areq = {
+            "termsOfServiceAgreed": True,
+            "contact": [f"mailto:{account_email}"],
+        }
         self.client.account_request(areq)
 
     def order(self, keynum):
@@ -52,6 +64,6 @@ class ACME:
     def wait(self, num):
         self.status, _url = self.client.notify(self.challenges[num]["url"])
 
-    def final(self, keynum, hw_csr):
-        self.client.final(keynum, hw_csr)
+    def final(self, keynum, hw_csr, jwt: str):
+        self.client.final(keynum, hw_csr, jwt)
         return self.client.getcert()

@@ -20,23 +20,23 @@ class AlgorithmIdentifier(Sequence):
 
 
 class pkcs:
-    pkcs11 = None
     sessions = {}
     attest = None
     attests = {}
     keys = {1: 1, 2: 2, 3: 3, 4: 4}
 
-    def __init__(self):
-        self.pkcs11 = PyKCS11.PyKCS11Lib()
-        self.pkcs11.load("/usr/lib64/libykcs11.so.2")
+    pkcs11: PyKCS11.PyKCS11Lib
+    _yubikey_pin: str
+
+    def __init__(self, pykcs11lib: PyKCS11.PyKCS11Lib, yubikey_pin: str):
+        self.pkcs11 = pykcs11lib
+        self._yubikey_pin = yubikey_pin
 
     def getusersession(self, slot):
         print("User Open", slot)
         if slot not in self.sessions:
-            # self.sessions[slot] = self.pkcs11.openSession(slot)
-            # self.sessions[slot].login("123456")
             self.sessions[slot] = self.pkcs11.openSession(slot)
-            self.sessions[slot].login("123456")
+            self.sessions[slot].login(self._yubikey_pin)
         return self.sessions[slot]
 
     def getsession(self, slot):
@@ -70,9 +70,7 @@ class pkcs:
 
     def listattest(self, slot):
         session = self.getsession(slot)
-        all_objects = session.findObjects(
-            [(PyKCS11.CKA_CLASS, PyKCS11.CKO_CERTIFICATE)]
-        )
+        all_objects = session.findObjects([(PyKCS11.CKA_CLASS, PyKCS11.CKO_CERTIFICATE)])
         for obj in all_objects:
             label = session.getAttributeValue(obj, [PyKCS11.CKA_LABEL])[0]
             value = session.getAttributeValue(obj, [PyKCS11.CKA_VALUE])[0]
@@ -107,9 +105,7 @@ class pkcs:
 
     def listprivatekeys(self, slot):
         session = self.getsession(slot)
-        all_objects = session.findObjects(
-            [(PyKCS11.CKA_CLASS, PyKCS11.CKO_PRIVATE_KEY)]
-        )
+        all_objects = session.findObjects([(PyKCS11.CKA_CLASS, PyKCS11.CKO_PRIVATE_KEY)])
         print(all_objects)
         self.delsession(slot)
 
@@ -129,6 +125,34 @@ class pkcs:
         return b64crt
 
     def makecsr(self, session, private_key, public_key):
+        from asn1crypto import csr as csr_module, x509
+
+        san = x509.GeneralNames(
+            [
+                x509.GeneralName("dns_name", "example.com"),
+                x509.GeneralName("dns_name", "www.example.com"),
+            ]
+        )
+        extensions = [
+            csr_module.CRIAttribute(
+                {
+                    "type": "extension_request",
+                    "values": [
+                        x509.Extensions(
+                            [
+                                x509.Extension(
+                                    {
+                                        "extn_id": "subject_alt_name",
+                                        "critical": False,
+                                        "extn_value": san,
+                                    }
+                                )
+                            ]
+                        )
+                    ],
+                }
+            )
+        ]
         info = CertificationRequestInfo(
             {
                 "version": 0,
@@ -149,20 +173,14 @@ class pkcs:
                     },
                     "public_key": RSAPublicKey(
                         {
-                            "modulus": int.from_bytes(
-                                session.getAttributeValue(
-                                    public_key, [PyKCS11.CKA_MODULUS]
-                                )[0]
-                            ),
+                            "modulus": int.from_bytes(session.getAttributeValue(public_key, [PyKCS11.CKA_MODULUS])[0]),
                             "public_exponent": int.from_bytes(
-                                session.getAttributeValue(
-                                    public_key, [PyKCS11.CKA_PUBLIC_EXPONENT]
-                                )[0]
+                                session.getAttributeValue(public_key, [PyKCS11.CKA_PUBLIC_EXPONENT])[0]
                             ),
                         }
                     ),
                 },
-                "attributes": [],
+                "attributes": extensions,
             }
         )
         value = session.sign(
@@ -187,12 +205,8 @@ class pkcs:
     def getcsr(self, slot, keyid):
         csr = None
         session = self.getusersession(slot)
-        privkey = session.findObjects(
-            [(PyKCS11.CKA_CLASS, PyKCS11.CKO_PRIVATE_KEY), (PyKCS11.CKA_ID, [keyid])]
-        )
-        pubkey = session.findObjects(
-            [(PyKCS11.CKA_CLASS, PyKCS11.CKO_PUBLIC_KEY), (PyKCS11.CKA_ID, [keyid])]
-        )
+        privkey = session.findObjects([(PyKCS11.CKA_CLASS, PyKCS11.CKO_PRIVATE_KEY), (PyKCS11.CKA_ID, [keyid])])
+        pubkey = session.findObjects([(PyKCS11.CKA_CLASS, PyKCS11.CKO_PUBLIC_KEY), (PyKCS11.CKA_ID, [keyid])])
         if privkey and pubkey:
             privkey = privkey[0]
             pubkey = pubkey[0]
@@ -204,7 +218,7 @@ class pkcs:
         return csr
 
     def savecert(self, slot, keyid, pemcerts):
-        usercert, _rootcert = pemcerts.split("\n\n")
+        usercert, _rootcert = pemcerts.split("\n-----BEGIN CERTIFICATE-----\n")
         cert = pem.unarmor(usercert.encode())[2]
         x509 = Certificate.load(cert)
         subject = x509.subject
